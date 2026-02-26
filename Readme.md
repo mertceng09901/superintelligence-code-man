@@ -1,6 +1,6 @@
 # superintelligence code man
 
-> **Not:** Bu bölüm proje adı ile güncellenmelidir.
+> 
 
 ---
 
@@ -22,9 +22,9 @@ superintelligence-code-man, kullanıcıların en güncel akıllı telefon modell
 ## Proje Linkleri
 
 - **REST API Adresi:** (https://api.superintelligence-code-man
-.com)
+)
 - **Web Frontend Adresi:** (https://frontend.superintelligence-code-man
-.com)
+)
 
 ---
 
@@ -32,6 +32,7 @@ superintelligence-code-man, kullanıcıların en güncel akıllı telefon modell
 
 **Grup Adı:** 
 > Super Tecno
+
 **Ekip Üyeleri:** 
 - Mert-Acar
 
