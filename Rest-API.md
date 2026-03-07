@@ -1,6 +1,6 @@
 # REST API Görev Dağılımı
 
-**REST API Adresi:** [api.yazmuh.com](https://api.yazmuh.com)
+**REST API Adresi:** [api.superintelligenceCodeMan.com](https://api.Superintelligence Code Man.com)
 
 Bu dokümanda, proje ekibindeki her üyenin geliştirmekten sorumlu olduğu REST API metotları listelenmektedir.
 

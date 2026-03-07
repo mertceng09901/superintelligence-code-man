@@ -1,4 +1,4 @@
-# Ali Tutar'ın REST API Metotları
+# Mert ACAR'ın REST API Metotları
 
 **API Test Videosu:** [Link buraya eklenecek](https://example.com)
 
