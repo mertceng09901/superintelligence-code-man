@@ -1,53 +1,54 @@
 openapi: 3.0.3
 info:
-  title: Mekan ve Yorum Yönetim API'si
+  title: Superintelligence Code Man API
   version: 1.0.0
   description: >
-    Bu API, mekanların ve bu mekanlara ait kullanıcı yorumlarının yönetilmesi için
-    tasarlanmış bir RESTful servistir. Temel CRUD (Create, Read, Update, Delete) işlemlerini
-    destekler. Mekanlar coğrafi koordinatlara göre sorgulanabilir ve her mekana kullanıcılar
-    tarafından yorum bırakılabilir. API, JWT tabanlı kimlik doğrulama ile korunmaktadır.
+    Bu API, "Superintelligence Code Man" akıllı telefon e-ticaret platformunun
+    yönetilmesi için tasarlanmış bir RESTful servistir. Temel CRUD (Create, Read, 
+    Update, Delete) işlemlerini destekler. Telefonlar marka, donanım özellikleri ve 
+    fiyata göre detaylı sorgulanabilir; kullanıcılar sepet ve sipariş işlemlerini 
+    güvenle gerçekleştirebilir. API, JWT tabanlı kimlik doğrulama ile korunmaktadır.
   contact:
-    name: Asım Sinan Yüksel
-    email: asimyuksel@sdu.edu.tr
+    name: Mert Acar
+    email: iletisim@superintelligence-code-man.com
 
 servers:
-  - url: https://api.vercel.com
+  - url: https://api.superintelligence-code-man.com
     description: Üretim sunucusu (Production)
-  - url: https://staging-api.vercel.com
+  - url: https://staging-api.superintelligence-code-man.com
     description: Test sunucusu (Staging)
-  - url: https://localhost:3000
+  - url: http://localhost:3000
     description: Yerel geliştirme sunucusu (Development)
 
 tags:
-  - name: Mekanlar
-    description: Mekan oluşturma, listeleme, güncelleme ve silme işlemleri
-  - name: Yorumlar
-    description: Mekanlara ait yorum oluşturma, görüntüleme, güncelleme ve silme işlemleri
+  - name: Telefonlar
+    description: Akıllı telefon ekleme, listeleme, filtreleme, güncelleme ve silme işlemleri
+  - name: Siparişler
+    description: Sepetteki ürünler için sipariş oluşturma ve geçmişi görüntüleme işlemleri
 
 security:
   - BearerAuth: []
 
 paths:
-  /api/venues:
+  /api/products:
     post:
       tags:
-        - Mekanlar
-      summary: Mekan Ekle
-      operationId: addVenue
+        - Telefonlar
+      summary: Yeni Telefon Ekle (Admin)
+      operationId: addProduct
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/VenueInput'
+              $ref: '#/components/schemas/ProductInput'
       responses:
         "201":
-          description: Mekan başarıyla oluşturuldu
+          description: Akıllı telefon başarıyla kataloga eklendi
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Venue'
+                $ref: '#/components/schemas/Product'
         "400":
           description: Geçersiz istek verisi
           content:
@@ -68,26 +69,25 @@ paths:
                 $ref: '#/components/schemas/Error'
     get:
       tags:
-        - Mekanlar
-      summary: Yakındaki Mekanları Listele
-      operationId: listNearbyVenues
+        - Telefonlar
+      summary: Telefonları Listele ve Filtrele
+      operationId: listProducts
       parameters:
-        - name: lat
+        - name: brand
           in: query
-          required: true
-          description: Enlem değeri (latitude)
+          required: false
+          description: Markaya göre filtrele (Örn. Apple, Samsung)
+          schema:
+            type: string
+          example: "Apple"
+        - name: minPrice
+          in: query
+          required: false
+          description: Minimum fiyat limiti
           schema:
             type: number
             format: float
-          example: 37.7749
-        - name: long
-          in: query
-          required: true
-          description: Boylam değeri (longitude)
-          schema:
-            type: number
-            format: float
-          example: 35.3213
+          example: 40000
         - name: page
           in: query
           required: false
@@ -109,56 +109,44 @@ paths:
           example: 10
       responses:
         "200":
-          description: Yakındaki mekanlar başarıyla listelendi
+          description: Telefonlar başarıyla listelendi
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Venue'
+                  $ref: '#/components/schemas/Product'
         "400":
-          description: Geçersiz koordinatlar
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        "401":
-          description: Kimlik doğrulama başarısız (token eksik veya geçersiz)
+          description: Geçersiz filtre parametreleri
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
 
-  /api/venues/{venueid}:
+  /api/products/{productid}:
     parameters:
-      - name: venueid
+      - name: productid
         in: path
         required: true
-        description: Mekanın benzersiz kimlik numarası
+        description: Telefonun benzersiz kimlik numarası (MongoDB ObjectId)
         schema:
           type: string
-        example: "abc123"
+        example: "60d5ec49f1b2c8b1f8e4e1a1"
 
     get:
       tags:
-        - Mekanlar
-      summary: Mekan Getir
-      operationId: getVenue
+        - Telefonlar
+      summary: Telefon Detayı Getir
+      operationId: getProduct
       responses:
         "200":
-          description: Mekan başarıyla getirildi
+          description: Telefon detayı başarıyla getirildi
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Venue'
-        "401":
-          description: Kimlik doğrulama başarısız (token eksik veya geçersiz)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
+                $ref: '#/components/schemas/Product'
         "404":
-          description: Mekan bulunamadı
+          description: Telefon bulunamadı
           content:
             application/json:
               schema:
@@ -166,22 +154,22 @@ paths:
 
     put:
       tags:
-        - Mekanlar
-      summary: Mekan Güncelle
-      operationId: updateVenue
+        - Telefonlar
+      summary: Telefon Bilgilerini Güncelle (Admin)
+      operationId: updateProduct
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/VenueInput'
+              $ref: '#/components/schemas/ProductInput'
       responses:
         "200":
-          description: Mekan başarıyla güncellendi
+          description: Telefon başarıyla güncellendi
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Venue'
+                $ref: '#/components/schemas/Product'
         "400":
           description: Geçersiz istek verisi
           content:
@@ -201,7 +189,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         "404":
-          description: Mekan bulunamadı
+          description: Telefon bulunamadı
           content:
             application/json:
               schema:
@@ -209,14 +197,14 @@ paths:
 
     delete:
       tags:
-        - Mekanlar
-      summary: Mekan Sil
-      operationId: deleteVenue
+        - Telefonlar
+      summary: Telefonu Katalogdan Sil (Admin)
+      operationId: deleteProduct
       responses:
         "204":
-          description: Mekan başarıyla silindi
+          description: Telefon başarıyla silindi
         "401":
-          description: Kimlik doğrulama başarısız (token eksik veya geçersiz)
+          description: Kimlik doğrulama başarısız
           content:
             application/json:
               schema:
@@ -228,27 +216,18 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
         "404":
-          description: Mekan bulunamadı
+          description: Telefon bulunamadı
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
 
-  /api/venues/{venueid}/comments:
-    parameters:
-      - name: venueid
-        in: path
-        required: true
-        description: Yorumun ait olduğu mekanın kimlik numarası
-        schema:
-          type: string
-        example: "abc123"
-
+  /api/orders:
     get:
       tags:
-        - Yorumlar
-      summary: Yorumları Listele
-      operationId: listComments
+        - Siparişler
+      summary: Sipariş Geçmişini Listele
+      operationId: listOrders
       parameters:
         - name: page
           in: query
@@ -259,33 +238,17 @@ paths:
             minimum: 1
             default: 1
           example: 1
-        - name: limit
-          in: query
-          required: false
-          description: Sayfa başına sonuç sayısı (varsayılan 10, maksimum 50)
-          schema:
-            type: integer
-            minimum: 1
-            maximum: 50
-            default: 10
-          example: 10
       responses:
         "200":
-          description: Yorumlar başarıyla listelendi
+          description: Siparişler başarıyla listelendi
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Comment'
+                  $ref: '#/components/schemas/Order'
         "401":
-          description: Kimlik doğrulama başarısız (token eksik veya geçersiz)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        "404":
-          description: Mekan bulunamadı
+          description: Kimlik doğrulama başarısız
           content:
             application/json:
               schema:
@@ -293,148 +256,30 @@ paths:
 
     post:
       tags:
-        - Yorumlar
-      summary: Yorum Ekle
-      operationId: addComment
+        - Siparişler
+      summary: Yeni Sipariş Oluştur
+      operationId: createOrder
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CommentInput'
+              $ref: '#/components/schemas/OrderInput'
       responses:
         "201":
-          description: Yorum başarıyla oluşturuldu
+          description: Sipariş başarıyla oluşturuldu ve ödeme alındı
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Comment'
+                $ref: '#/components/schemas/Order'
         "400":
-          description: Geçersiz istek verisi
+          description: Geçersiz ödeme veya adres verisi
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
         "401":
-          description: Kimlik doğrulama başarısız (token eksik veya geçersiz)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        "404":
-          description: Mekan bulunamadı
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-
-  /api/venues/{venueid}/comments/{commentid}:
-    parameters:
-      - name: venueid
-        in: path
-        required: true
-        description: Yorumun ait olduğu mekanın kimlik numarası
-        schema:
-          type: string
-        example: "abc123"
-      - name: commentid
-        in: path
-        required: true
-        description: Yorumun benzersiz kimlik numarası
-        schema:
-          type: string
-        example: "cmt456"
-
-    get:
-      tags:
-        - Yorumlar
-      summary: Yorum Getir
-      operationId: getComment
-      responses:
-        "200":
-          description: Yorum başarıyla getirildi
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Comment'
-        "401":
-          description: Kimlik doğrulama başarısız (token eksik veya geçersiz)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        "404":
-          description: Yorum bulunamadı
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-
-    put:
-      tags:
-        - Yorumlar
-      summary: Yorum Güncelle
-      operationId: updateComment
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/CommentInput'
-      responses:
-        "200":
-          description: Yorum başarıyla güncellendi
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Comment'
-        "400":
-          description: Geçersiz istek verisi
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        "401":
-          description: Kimlik doğrulama başarısız (token eksik veya geçersiz)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        "403":
-          description: Bu işlem için yetkiniz bulunmuyor
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        "404":
-          description: Yorum bulunamadı
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-
-    delete:
-      tags:
-        - Yorumlar
-      summary: Yorum Sil
-      operationId: deleteComment
-      responses:
-        "204":
-          description: Yorum başarıyla silindi
-        "401":
-          description: Kimlik doğrulama başarısız (token eksik veya geçersiz)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        "403":
-          description: Bu işlem için yetkiniz bulunmuyor
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-        "404":
-          description: Yorum bulunamadı
+          description: Kimlik doğrulama başarısız
           content:
             application/json:
               schema:
@@ -443,177 +288,112 @@ paths:
 components:
   securitySchemes:
     BearerAuth:
-      type: apiKey
-      in: header
-      name: Authorization
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
       description: 'JWT tabanlı kimlik doğrulama. İstek başlığına "Authorization: Bearer <token>" eklenmeli.'
 
   schemas:
-    Venue:
+    Product:
       type: object
-      description: Mekan bilgilerini temsil eden model
+      description: Akıllı telefon bilgilerini temsil eden model
       properties:
         _id:
           type: string
-          description: Mekanın benzersiz kimlik numarası (otomatik atanır)
-          example: "abc123"
-        name:
+          description: Ürünün benzersiz kimlik numarası (otomatik atanır)
+          example: "60d5ec49f1b2c8b1f8e4e1a1"
+        brand:
           type: string
-          description: Mekan adı
-          example: "Kafe Mavi"
-        address:
+          description: Telefonun markası
+          example: "Apple"
+        model:
           type: string
-          description: Mekanın açık adresi
-          example: "Atatürk Cad. No:12, Ankara"
-        rating:
+          description: Telefonun modeli
+          example: "iPhone 15 Pro"
+        price:
+          type: number
+          format: float
+          description: Telefonun satış fiyatı (TL)
+          example: 65000
+        stock:
           type: integer
-          description: Mekan puanı (1-5 arası)
-          minimum: 1
-          maximum: 5
-          example: 4
-        facilities:
-          type: array
-          description: Mekanda sunulan olanaklar
-          items:
-            type: string
-          example: ["Wi-Fi", "Otopark", "Canlı Müzik"]
-        coords:
+          description: Güncel stok adedi
+          example: 45
+        specs:
           type: object
-          description: Mekanın coğrafi koordinatları
+          description: Telefonun donanım özellikleri
           properties:
-            lat:
-              type: number
-              format: float
-              description: Enlem değeri
-              example: 37.7749
-            long:
-              type: number
-              format: float
-              description: Boylam değeri
-              example: 35.3213
-          required:
-            - lat
-            - long
+            ram:
+              type: string
+              example: "8GB"
+            storage:
+              type: string
+              example: "256GB"
       required:
-        - name
-        - address
-        - coords
+        - brand
+        - model
+        - price
+        - stock
 
-    VenueInput:
+    ProductInput:
       type: object
-      description: Mekan oluşturma veya güncelleme isteği için gönderilecek veri
+      description: Akıllı telefon oluşturma veya güncelleme isteği için veri
       properties:
-        name:
+        brand:
           type: string
-          description: Mekan adı
+          description: Telefonun markası
           minLength: 2
-          maxLength: 100
-          example: "Kafe Mavi"
-        address:
+          example: "Apple"
+        model:
           type: string
-          description: Mekanın açık adresi
-          minLength: 5
-          example: "Atatürk Cad. No:12, Ankara"
-        rating:
+          description: Telefonun modeli
+          minLength: 2
+          example: "iPhone 15 Pro"
+        price:
+          type: number
+          format: float
+          description: Telefonun satış fiyatı (TL)
+          minimum: 0
+          example: 65000
+        stock:
           type: integer
-          description: Mekan puanı (1-5 arası)
-          minimum: 1
-          maximum: 5
-          example: 4
-        facilities:
-          type: array
-          description: Mekanda sunulan olanaklar
-          items:
-            type: string
-          example: ["Wi-Fi", "Otopark"]
-        coords:
+          description: Eklenecek stok adedi
+          minimum: 0
+          example: 45
+        specs:
           type: object
-          description: Mekanın coğrafi koordinatları
           properties:
-            lat:
-              type: number
-              format: float
-              description: Enlem değeri
-              example: 37.7749
-            long:
-              type: number
-              format: float
-              description: Boylam değeri
-              example: 35.3213
-          required:
-            - lat
-            - long
+            ram:
+              type: string
+              example: "8GB"
+            storage:
+              type: string
+              example: "256GB"
       required:
-        - name
-        - address
-        - coords
+        - brand
+        - model
+        - price
+        - stock
 
-    Comment:
+    Order:
       type: object
-      description: Yorum bilgilerini temsil eden model
+      description: Sipariş bilgilerini temsil eden model
       properties:
         _id:
           type: string
-          description: Yorumun benzersiz kimlik numarası (otomatik atanır)
-          example: "cmt456"
-        author:
+          description: Siparişin benzersiz kimlik numarası
+          example: "ord_8912"
+        totalAmount:
+          type: number
+          format: float
+          description: Siparişin toplam tutarı
+          example: 65000
+        deliveryStatus:
           type: string
-          description: Yorumu yazan kullanıcının adı
-          example: "Ahmet Yılmaz"
-        rating:
-          type: integer
-          description: Kullanıcının verdiği puan (1-5 arası)
-          minimum: 1
-          maximum: 5
-          example: 5
-        text:
-          type: string
-          description: Yorum metni
-          example: "Harika bir mekan, kesinlikle tavsiye ederim!"
+          description: Kargo durumu
+          example: "Hazırlanıyor"
         createdOn:
           type: string
           format: date-time
-          description: Yorumun oluşturulma tarihi (ISO 8601 formatında)
-          example: "2026-02-20T14:30:00Z"
-      required:
-        - author
-        - rating
-        - text
-
-    CommentInput:
-      type: object
-      description: Yorum oluşturma veya güncelleme isteği için gönderilecek veri
-      properties:
-        author:
-          type: string
-          description: Yorumu yazan kullanıcının adı
-          minLength: 2
-          maxLength: 50
-          example: "Ahmet Yılmaz"
-        rating:
-          type: integer
-          description: Kullanıcının verdiği puan (1-5 arası)
-          minimum: 1
-          maximum: 5
-          example: 5
-        text:
-          type: string
-          description: Yorum metni
-          minLength: 5
-          maxLength: 500
-          example: "Harika bir mekan, kesinlikle tavsiye ederim!"
-      required:
-        - author
-        - rating
-        - text
-
-    Error:
-      type: object
-      description: Hata durumlarında döndürülen standart hata yanıtı
-      properties:
-        message:
-          type: string
-          description: Hatayı açıklayan mesaj
-          example: "Mekan bulunamadı"
-      required:
-        - message
+          description: Sipariş tarihi (ISO 8601 formatında)
+          example: "2023-06-15T10:30:00Z"
