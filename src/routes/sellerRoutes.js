@@ -1,21 +1,48 @@
 const express = require('express');
 const router = express.Router();
+// Model dosyanın adının Product.js veya productModel.js olduğuna göre require kısmını ayarla
+const Product = require('../models/Product'); // Eğer dosya adın farklıysa burayı düzelt
 
-// Satıcı ürünlerini getir, ekle, sil (Basit taklit cevaplar)
-router.get('/products', (req, res) => {
-    res.status(200).json({ message: "Satıcı paneli ürünleri başarıyla getirildi.", products: [] });
+// 12. GEREKSİNİM: Satıcı Ürünlerini Getir (Gerçek Veritabanından)
+router.get('/products', async (req, res) => {
+    try {
+        const products = await Product.find(); // MongoDB'den tüm ürünleri bul
+        res.status(200).json({ message: "Satıcı paneli ürünleri getirildi.", products });
+    } catch (error) {
+        res.status(500).json({ message: "Ürünler getirilirken hata oluştu." });
+    }
 });
 
-router.get('/products/:id', (req, res) => {
-    res.status(200).json({ message: "Satıcı ürün detayı getirildi.", productId: req.params.id });
+// 14. GEREKSİNİM: Yeni Ürün Ekle (Gerçek Veritabanına Kayıt)
+router.post('/products', async (req, res) => {
+    try {
+        // Frontend'den gelen verilerle yeni ürün oluştur ve kaydet
+        const newProduct = new Product(req.body);
+        await newProduct.save(); 
+        res.status(201).json({ message: "Ürün başarıyla eklendi.", product: newProduct });
+    } catch (error) {
+        res.status(500).json({ message: "Ürün eklenemedi." });
+    }
 });
 
-router.post('/products', (req, res) => {
-    res.status(201).json({ message: "Ürün satıcı paneline başarıyla eklendi." });
+// 15. GEREKSİNİM: Ürün Silme (Gerçek Veritabanından Sil)
+router.delete('/products/:id', async (req, res) => {
+    try {
+        await Product.findByIdAndDelete(req.params.id);
+        res.status(200).json({ message: "Ürün başarıyla silindi." });
+    } catch (error) {
+        res.status(500).json({ message: "Ürün silinemedi." });
+    }
 });
 
-router.delete('/products/:id', (req, res) => {
-    res.status(200).json({ message: "Ürün satıcı panelinden başarıyla silindi." });
+// 13. GEREKSİNİM: Ürün Detay
+router.get('/products/:id', async (req, res) => {
+    try {
+        const product = await Product.findById(req.params.id);
+        res.status(200).json(product);
+    } catch (error) {
+        res.status(500).json({ message: "Ürün detayı getirilemedi." });
+    }
 });
 
 module.exports = router;
