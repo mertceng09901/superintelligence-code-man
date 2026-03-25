@@ -14,14 +14,15 @@ router.get('/products', async (req, res) => {
 });
 
 // 14. GEREKSİNİM: Yeni Ürün Ekle (Gerçek Veritabanına Kayıt)
+// 14. GEREKSİNİM: Yeni Ürün Ekle (Gerçek Veritabanına Kayıt)
 router.post('/products', async (req, res) => {
     try {
-        // Frontend'den gelen verilerle yeni ürün oluştur ve kaydet
         const newProduct = new Product(req.body);
         await newProduct.save(); 
         res.status(201).json({ message: "Ürün başarıyla eklendi.", product: newProduct });
     } catch (error) {
-        res.status(500).json({ message: "Ürün eklenemedi." });
+        // HATANIN GERÇEK SEBEBİNİ FRONTEND'E GÖNDERİYORUZ
+        res.status(500).json({ message: "Ürün eklenemedi.", detay: error.message });
     }
 });
 
