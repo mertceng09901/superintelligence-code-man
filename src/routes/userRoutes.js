@@ -2,11 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { getUser, updateUser, deleteUser } = require('../controllers/userController');
 const { protect } = require('../middlewares/authMiddleware');
-
-// Tüm kullanıcı işlemleri için giriş yapmış olmak (Token) zorunludur
-router.get('/:userId', protect, getUser);
-router.put('/:userId', protect, updateUser);
-router.delete('/:userId', protect, deleteUser);// 10. Kullanıcı Profilini Görüntüleme (Hocanın istediği yol)
+// 10. Kullanıcı Profilini Görüntüleme (Hocanın istediği yol)
 router.get('/profile', (req, res) => {
     res.status(200).json({
         id: "12345",
@@ -23,4 +19,9 @@ router.put('/profile', (req, res) => {
         updatedData: req.body
     });
 });
+
+// Tüm kullanıcı işlemleri için giriş yapmış olmak (Token) zorunludur
+router.get('/:userId', protect, getUser);
+router.put('/:userId', protect, updateUser);
+router.delete('/:userId', protect, deleteUser);
 module.exports = router;
