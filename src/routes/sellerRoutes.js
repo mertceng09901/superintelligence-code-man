@@ -45,5 +45,23 @@ router.get('/products/:id', async (req, res) => {
         res.status(500).json({ message: "Ürün detayı getirilemedi." });
     }
 });
+// TEK BİR ÜRÜNÜ GETİR (Güncelleme ve Detay için lazım)
+router.get('/products/:id', async (req, res) => {
+    try {
+        const product = await Product.findById(req.params.id);
+        res.json(product);
+    } catch (error) {
+        res.status(404).json({ message: "Ürün bulunamadı" });
+    }
+});
 
+// ÜRÜN GÜNCELLE
+router.put('/products/:id', async (req, res) => {
+    try {
+        const updatedProduct = await Product.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        res.json(updatedProduct);
+    } catch (error) {
+        res.status(500).json({ message: "Güncelleme başarısız", error });
+    }
+});
 module.exports = router;
