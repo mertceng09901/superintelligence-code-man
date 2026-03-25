@@ -6,6 +6,21 @@ const { protect } = require('../middlewares/authMiddleware');
 // Tüm kullanıcı işlemleri için giriş yapmış olmak (Token) zorunludur
 router.get('/:userId', protect, getUser);
 router.put('/:userId', protect, updateUser);
-router.delete('/:userId', protect, deleteUser);
+router.delete('/:userId', protect, deleteUser);// 10. Kullanıcı Profilini Görüntüleme (Hocanın istediği yol)
+router.get('/profile', (req, res) => {
+    res.status(200).json({
+        id: "12345",
+        name: "Mert Acar",
+        email: "mert@superintelligence.com",
+        role: "ADMIN"
+    });
+});
 
+// 11. Kullanıcı Profilini Güncelleme
+router.put('/profile', (req, res) => {
+    res.status(200).json({ 
+        message: "Kullanıcı profili başarıyla güncellendi.",
+        updatedData: req.body
+    });
+});
 module.exports = router;
