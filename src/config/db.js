@@ -2,16 +2,16 @@ const mongoose = require('mongoose');
 
 const connectDB = async () => {
   try {
-    console.log("⏳ MongoDB'ye bağlanılmaya çalışılıyor...");
+    // Bağlantı seçeneklerini ekleyerek Mongoose'u zorluyoruz
     await mongoose.connect(process.env.MONGO_URI, {
-      serverSelectionTimeoutMS: 5000 // 5 saniye içinde bağlanamazsan hata ver
+      serverSelectionTimeoutMS: 5000,
+      autoIndex: true,
     });
-    console.log("✅ MongoDB Bağlantısı Başarılı!");
+    console.log("✅✅ MÜJDE: MongoDB Bağlantısı Başarılı!");
   } catch (err) {
-    console.error("❌ MongoDB Bağlantı Hatası:", err.message);
-    process.exit(1); // Bağlantı yoksa uygulamayı durdur ki hatayı görelim
+    console.error("❌❌ Bağlantı Hatası:", err.message);
+    process.exit(1); 
   }
 };
 
-connectDB();
 module.exports = connectDB;
