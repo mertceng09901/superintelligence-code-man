@@ -29,6 +29,7 @@ app.use('/api/orders', orderRoutes);    // Sipariş işlemleri
 app.use('/api/payments', paymentRoutes); // Ödeme işlemleri
 app.use('/api/seller', sellerRoutes);   // Satıcı paneli (Ekle, Sil, Güncelle)
 
+
 // --- Ana Sayfa Test Uç Noktası ---
 app.get('/', (req, res) => {
     res.send('🚀 Superintelligence API Yayında ve Sorunsuz Çalışıyor!');
