@@ -1,6 +1,6 @@
 const express = require('express');
-const app = require('./app'); // app.js dosyanı içe aktar
-const connectDB = require('./config/db'); // db.js yolun doğru olsun
+const app = require('./src/app'); // app.js dosyanı içe aktar
+const connectDB = require('./src/config/db'); // db.js yolun doğru olsun
 
 const PORT = process.env.PORT || 5000;
 
