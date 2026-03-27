@@ -14,36 +14,44 @@ exports.getCart = async (req, res) => {
 };
 
 // Sepete Ürün Ekleme
+// Sepete Ürün Ekleme (Güncellenmiş)
 exports.addToCart = async (req, res) => {
     try {
         const { productId, quantity, selectedColor } = req.body;
+        // Alttan tireli _id kullanımına dikkat!
+        const userId = req.user._id || req.user.id; 
+
         const product = await Product.findById(productId);
-        
         if (!product) return res.status(404).json({ message: 'Ürün bulunamadı' });
 
-        let cart = await Cart.findOne({ user: req.user.id });
+        let cart = await Cart.findOne({ user: userId });
 
         if (!cart) {
-            // Kullanıcının sepeti yoksa yeni oluştur
-            cart = new Cart({ user: req.user.id, items: [], totalAmount: 0 });
+            cart = new Cart({ user: userId, items: [], totalAmount: 0 });
         }
 
-        // Ürün zaten sepette var mı kontrol et
         const itemIndex = cart.items.findIndex(p => p.product.toString() === productId);
 
         if (itemIndex > -1) {
-            // Varsa miktarını artır
-            cart.items[itemIndex].quantity += quantity;
+            cart.items[itemIndex].quantity += Number(quantity);
         } else {
-            // Yoksa sepete yeni ürün olarak ekle
-            cart.items.push({ product: productId, quantity, selectedColor });
+            cart.items.push({ product: productId, quantity: Number(quantity), selectedColor });
         }
 
-        // Toplam tutarı güncelle
-        cart.totalAmount += product.price * quantity;
-        await cart.save();
+        // Toplam tutarı tüm itemlar üzerinden temizce hesapla
+        // Bu yöntem manuel eklemeden daha güvenlidir
+        cart.totalAmount = cart.items.reduce((acc, item) => {
+            // Eğer populate edilmemişse product.price kullanamayız, 
+            // o yüzden yukarıda bulduğumuz 'product' değişkenini kullanıyoruz
+            return acc + (product.price * item.quantity); 
+        }, 0);
 
-        res.json(cart);
+        await cart.save();
+        
+        // Frontend'e giderken ürün bilgilerinin (resim, marka vs.) dolu gitmesi için tekrar populate et
+        const updatedCart = await Cart.findById(cart._id).populate('items.product');
+        res.json(updatedCart);
+
     } catch (error) {
         res.status(500).json({ message: 'Sunucu hatası', error: error.message });
     }

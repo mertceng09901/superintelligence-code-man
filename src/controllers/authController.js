@@ -50,6 +50,32 @@ exports.register = async (req, res) => {
         res.status(500).json({ message: 'Sunucu hatası', error: error.message });
     }
 };
+// -----------------------------------------
+// @işlem   Kullanıcı Profil Bilgilerini Getir
+// @istek   GET /api/auth/profile
+// -----------------------------------------
+exports.getProfile = async (req, res) => {
+    try {
+        // KRİTİK NOKTA: req.user.id, authMiddleware (protect) tarafından token'dan çözülür.
+        // Mert girerse Mert'in, Esra girerse Esra'nın ID'si gelir.
+        const user = await User.findById(req.user._id); 
+
+        if (user) {
+            res.json({
+                _id: user._id,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                email: user.email,
+                role: user.role,
+                phone: user.phone
+            });
+        } else {
+            res.status(404).json({ message: 'Kullanıcı bulunamadı.' });
+        }
+    } catch (error) {
+        res.status(500).json({ message: 'Sunucu hatası', error: error.message });
+    }
+};
 
 // -----------------------------------------
 // @işlem   Kullanıcı Girişi (Login)
