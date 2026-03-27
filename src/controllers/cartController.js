@@ -56,3 +56,27 @@ exports.addToCart = async (req, res) => {
         res.status(500).json({ message: 'Sunucu hatası', error: error.message });
     }
 };
+// Sepetten Ürün Kaldırma
+exports.removeFromCart = async (req, res) => {
+    try {
+        const userId = req.user._id || req.user.id;
+        const { productId } = req.params;
+
+        const cart = await Cart.findOne({ user: userId });
+        if (!cart) return res.status(404).json({ message: 'Sepet bulunamadı' });
+
+        cart.items = cart.items.filter(item => item.product.toString() !== productId);
+
+        // Toplam tutarı güncelle
+        await cart.populate('items.product');
+        cart.totalAmount = cart.items.reduce((acc, item) => {
+            return acc + (item.product.price * item.quantity);
+        }, 0);
+
+        await cart.save();
+        const updatedCart = await Cart.findById(cart._id).populate('items.product');
+        res.json(updatedCart);
+    } catch (error) {
+        res.status(500).json({ message: 'Sunucu hatası', error: error.message });
+    }
+};

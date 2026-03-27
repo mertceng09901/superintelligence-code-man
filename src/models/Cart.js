@@ -15,7 +15,7 @@ const cartItemSchema = new mongoose.Schema({
     },
     selectedColor: {
         type: String,
-        required: true // Örneğin: "Titanium"
+        required: false // Örneğin: "Titanium"
     }
 }, { _id: false }); // Her sepetteki ürün için gereksiz yere ekstra ID oluşturmasını engelleriz
 
