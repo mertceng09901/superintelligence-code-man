@@ -24,4 +24,6 @@ router.put('/profile', (req, res) => {
 router.get('/:userId', protect, getUser);
 router.put('/:userId', protect, updateUser);
 router.delete('/:userId', protect, deleteUser);
+// backend/routes/userRoutes.js
+router.get('/profile', protect, getProfile);
 module.exports = router;
