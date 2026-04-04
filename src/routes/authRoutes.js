@@ -1,15 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const { register, login } = require('../controllers/authController');
+
+// DÜZELTME: Eski kodda register ve login İKİ KEZ import edilmişti → backend crash ediyordu
 const { register, login, getProfile } = require('../controllers/authController');
-const { protect } = require('../middlewares/authMiddleware'); // Bu bekçi çok önemli!
+const { protect } = require('../middlewares/authMiddleware');
 
 router.post('/register', register);
 router.post('/login', login);
-
-// Profil rotası 'protect' middleware'i ile korunmalı
 router.get('/profile', protect, getProfile);
-router.post('/register', register);
-router.post('/login', login);
 
 module.exports = router;
