@@ -1,19 +1,19 @@
 const express = require('express');
 const router = express.Router();
-// Controller'dan gerekli fonksiyonları alıyoruz
 const { getProfile, updateProfile, getUser, updateUser, deleteUser } = require('../controllers/userController');
 const { protect } = require('../middlewares/authMiddleware');
 
-// 10. GEREKSİNİM: Kullanıcı Profilini Görüntüleme (DİNAMİK YOL)
-// 'protect' sayesinde req.user doluyor, 'getProfile' ise veritabanından o kişiyi getiriyor
-router.get('/profile', protect, getProfile);
+// DÜZELTME: Sabit rotalar (/profile) dinamik rotalardan (/:userId) ÖNCE tanımlanmalı.
+// Aksi halde Express, PUT /profile isteğini görünce /:userId rotasıyla eşleştirir
+// ve "profile" string'ini MongoDB ID olarak kullanmaya çalışır → hata verir.
 
-// 11. GEREKSİNİM: Kullanıcı Profilini Güncelleme (DİNAMİK YOL)
+// Önce sabit rotalar
+router.get('/profile', protect, getProfile);
 router.put('/profile', protect, updateProfile);
 
-// Diğer kullanıcı işlemleri (ID bazlı)
-router.get('/:userId', protect, getUser);
-router.put('/:userId', protect, updateUser);
+// Sonra dinamik rotalar
+router.get('/:userId',    protect, getUser);
+router.put('/:userId',    protect, updateUser);
 router.delete('/:userId', protect, deleteUser);
 
 module.exports = router;
