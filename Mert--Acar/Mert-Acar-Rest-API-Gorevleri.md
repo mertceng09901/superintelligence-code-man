@@ -1,6 +1,6 @@
 # Mert ACAR'ın REST API Metotları
 
-**API Test Videosu:** [Link buraya eklenecek](https://example.com)
+**API Test Videosu:** [Youtube link](https://www.youtube.com/watch?v=zOVdJno_Owc)
 
 
 **BASE url:**[https://superintelligence-code-man.onrender.com](RENDER LİNKİ)
