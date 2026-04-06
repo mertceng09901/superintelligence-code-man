@@ -1,54 +1,16 @@
-# superintelligence code man
+# React + Vite
 
-> 
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
----
+Currently, two official plugins are available:
 
-## Proje Hakkında
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
 
-![Ürün Tanıtım Görseli](superintelligence-code-man.png)
+## React Compiler
 
-**Proje Tanımı:** 
-> 
+The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
 
-superintelligence-code-man, kullanıcıların en güncel akıllı telefon modellerini güvenle inceleyip satın alabileceği, modern ve kullanıcı dostu bir e-ticaret platformudur. React tabanlı dinamik arayüzümüz sayesinde müşterilerimiz marka, model, fiyat ve donanım özelliklerine göre detaylı filtreleme yapabilir, aradıkları telefonu saniyeler içinde bulabilirler. Node.js ve Express.js altyapısıyla desteklenen güçlü arka planımız ve MongoDB veritabanımız, binlerce ürün verisini, kullanıcı sepetlerini ve sipariş geçmişlerini anlık ve güvenli bir şekilde yönetir. Hızlı teslimat, güvenli ödeme entegrasyonları ve gelişmiş kullanıcı paneli ile superintelligence-code-man, mobil teknoloji alışverişini sorunsuz bir deneyime dönüştürmeyi hedefler.
-**Proje Kategorisi:** 
-> E-Ticaret
-**Referans Uygulama:** 
-> [Hepsiburada](https://www.google.com/search?gs_ssp=eJzj4tZP1zc0MsqqyDCuVGA0YHRg8OLOSC0ozkwqLUpMSQQAfKQI1Q&q=hepsiburada&oq=he&gs_lcrp=EgZjaHJvbWUqEAgBEC4YxwEYsQMY0QMYgAQyBggAEEUYOTIQCAEQLhjHARixAxjRAxiABDIQCAIQLhjHARixAxjRAxiABDINCAMQABiDARixAxiABDIKCAQQLhixAxiABDIGCAUQRRg9MgYIBhBFGD0yBggHEEUYPdIBCDI0MjNqMGo3qAIAsAIA&sourceid=chrome&ie=UTF-8)
+## Expanding the ESLint configuration
 
----
-
-## Proje Linkleri
-
-- **REST API Adresi:** (https://api.superintelligence-code-man
-)
-- **Web Frontend Adresi:** (https://frontend.superintelligence-code-man
-)
-
----
-
-## Proje Ekibi
-
-**Grup Adı:** 
-> Super Tecno
-
-**Ekip Üyeleri:** 
-- Mert-Acar
-
----
-
-## Dokümantasyon
-
-Proje dokümantasyonuna aşağıdaki linklerden erişebilirsiniz:
-
-1. [Gereksinim Analizi](Gereksinim-Analizi.md)
-2. [REST API Tasarımı](API-Tasarimi.md)
-3. [REST API](Rest-API.md)
-4. [Web Front-End](WebFrontEnd.md)
-5. [Mobil Front-End](MobilFrontEnd.md)
-6. [Mobil Backend](MobilBackEnd.md)
-7. [Video Sunum](Sunum.md)
-
----
-
+If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.

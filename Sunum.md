@@ -2,142 +2,64 @@
 
 ## Sunum Videosu
 
-> **Video Linki:** [Sunum videosu linki buraya eklenecek](https://example.com)
+> **Video Linki:** [https://www.youtube.com/watch?v=zOVdJno_Owc](Youtube linki)
 
 ---
 
 ## Sunum Yapısı
 
-### 1. Grup Lideri - Açılış Konuşması (1-2 dakika)
+# 🎙️ Sunum Planı: Superintelligence Code Man
 
-**Konuşma İçeriği:**
-- Grup adının tanıtılması
-- Projenin genel tanıtımı
-- Projenin amacı ve kapsamı
-- Sunumun yapısının kısaca açıklanması
-
-**Örnek Konuşma:**
-> "Merhaba, ben [Grup Lideri İsmi]. [Grup Adı] ekibi olarak [Proje Adı] projesini geliştirdik. Bu proje [kısa proje açıklaması]. Bugün sizlere projemizi ve ekibimizin çalışmalarını sunacağız. Her ekip üyesi kendini tanıtacak ve sorumlu olduğu gereksinimleri gösterecek."
+**Proje Sahibi:** Mert (Solo Developer)  
+**Sunum Süresi:** ~10 Dakika  
+**Canlı Link (Frontend):** [superintelligence-code-man.vercel.app](https://superintelligence-code-man.vercel.app)  
+**Canlı Link (API):** [superintelligence-code-man.onrender.com/api](https://superintelligence-code-man.onrender.com/api)
 
 ---
 
-### 2. Ekip Üyeleri - Kişisel Tanıtım ve Gereksinim Sunumu
-
-Her ekip üyesi için aşağıdaki yapı takip edilecektir:
-
-#### Format (Her üye için 4-6 dakika)
-
-**A) Kişisel Tanıtım (30-45 saniye)**
-- Yüz görünecek şekilde kamera karşısında
-- İsim ve soyisim
-- Ekipteki rolü
-- Sorumlu olduğu alan (Backend/Frontend/Mobil vb.)
-
-**B) Gereksinim Sunumu (3.5-5 dakika)**
-- Sorumlu olduğu gereksinimlerin listesi
-- Her gereksinimin kısa açıklaması
-- Canlı demo (ekran kaydı ile)
-- Her gereksinimin çalışır durumda olduğunun detaylı gösterilmesi
-- Her gereksinim için yeterli süre ayrılmalı (yaklaşık 1-1.5 dakika/gereksinim)
+## 1. Giriş ve Vizyon (2 Dakika)
+* **Selamlama:** "Merhaba, ben Mert. Bugün sizlere tek başıma geliştirdiğim Full-Stack e-ticaret projem 'Superintelligence Code Man'i sunacağım."
+* **Problem/Çözüm:** "Amacım; kullanıcıların hızlıca üye olabildiği, güvenli bir şekilde profil yönetebildiği ve backend-frontend haberleşmesinin kusursuz olduğu bir platform oluşturmaktı."
+* **Kapsam:** Sunum boyunca Backend (Node.js/Express), Frontend (React/Vite) ve Veritabanı (MongoDB) entegrasyonunu canlı demolarla göstereceğim.
 
 ---
 
-### 3. Ekip Üyeleri Sunum Sırası
-
-#### Ali Tutar
-**Kişisel Tanıtım:**
-- İsim: Ali Tutar
-
-**Gereksinimler:**
-1. **Üye Olma**
-   - API Metodu: `POST /auth/register`
-   - Demo: Kullanıcı kayıt işleminin gösterilmesi
-
-2. **Profil Görüntüleme**
-   - API Metodu: `GET /users/{userId}`
-   - Demo: Kullanıcı profil bilgilerinin görüntülenmesi
-
-3. **Profil Güncelleme**
-   - API Metodu: `PUT /users/{userId}`
-   - Demo: Profil bilgilerinin güncellenmesi
-
-4. **Hesap Silme**
-   - API Metodu: `DELETE /users/{userId}`
-   - Demo: Hesap silme işleminin gösterilmesi
+## 2. Teknik Altyapı ve Mimari (2 Dakika)
+* **Frontend:** React + Vite (Vercel üzerinde host edildi).
+* **Backend:** Node.js + Express.js (Render üzerinde host edildi).
+* **Database:** MongoDB Atlas (Cloud veritabanı).
+* **Bağlantı:** REST API mimarisi ve Axios kullanılarak kurulan dinamik köprü.
 
 ---
 
-#### Veli Yılmaz
-**Kişisel Tanıtım:**
-- İsim: Veli Yılmaz
-- Rol: [Rol belirtilecek]
+## 3. Gereksinim Sunumu ve Canlı Demo (8-10 Dakika)
 
-**Gereksinimler:**
-- [Gereksinim 1]
-- [Gereksinim 2]
-- [Gereksinim 3]
-- [Gereksinim 4]
+### A. Üyelik ve Kimlik Doğrulama (Auth)
+* **Gereksinim:** Yeni kullanıcı kaydı.
+* **API:** `POST /api/users/register`
+* **Demo Akışı:** 1. Vercel üzerindeki sitede "Kayıt Ol" sayfasına gidilir.
+    2. Yeni bir test kullanıcısı oluşturulur.
+    3. Kayıt başarılı mesajı gösterilir.
+    4. **Kanıt:** MongoDB Atlas arayüzü açılarak yeni kullanıcının 'users' koleksiyonuna düştüğü gösterilir.
 
----
+### B. Kullanıcı Profili ve Yönetimi
+* **Gereksinim:** Profil Görüntüleme ve Güncelleme.
+* **API:** `GET /api/users/:id` ve `PUT /api/users/:id`
+* **Demo Akışı:**
+    1. Oluşturulan kullanıcı ile giriş yapılır.
+    2. Profil bilgilerinin backend'den çekilerek ekrana basıldığı gösterilir.
+    3. Bilgiler güncellenir ve veritabanında anlık değişimi ispatlanır.
 
-### 4. Grup Lideri - Kapanış Konuşması (1 dakika)
-
-**Konuşma İçeriği:**
-- Tüm gereksinimlerin tamamlandığının özeti
-- Projenin başarıyla tamamlandığının vurgulanması
-
-**Örnek Konuşma:**
-> "Bugün sizlere [Proje Adı] projemizi sunduk. Tüm ekip üyelerimiz sorumlu oldukları gereksinimleri başarıyla tamamladılar ve çalışır durumda gösterdiler. Projemiz [kısa özet]. Teşekkürler!"
-
----
-
-## Sunum Hazırlık Kontrol Listesi
-
-### Genel Hazırlık
-- [ ] Grup lideri açılış konuşmasını hazırladı
-- [ ] Her ekip üyesi kendi sunumunu hazırladı
-- [ ] Tüm gereksinimler çalışır durumda
-- [ ] Demo senaryoları hazırlandı
-- [ ] Test verileri ve hesaplar hazırlandı
-
-### Teknik Hazırlık
-- [ ] Video kayıt cihazı/kamera hazır
-- [ ] Mikrofon kalitesi test edildi
-- [ ] Işıklandırma uygun
-- [ ] Arka plan düzenlendi
-- [ ] Ekran kayıt yazılımı hazır (demo için)
-
-### Kişisel Hazırlık
-- [ ] Her ekip üyesi kendi bölümünü prova etti
-- [ ] Konuşma süreleri kontrol edildi
-- [ ] Gereksinimler ezberlendi veya notlar hazırlandı
-- [ ] Demo akışı prova edildi
+### C. API Güvenliği ve Hata Yönetimi
+* **Gereksinim:** 404 Sayfaları ve Hatalı İsteklerin Yakalanması.
+* **Demo:** Mevcut olmayan bir API yoluna gidildiğinde backend'in döndürdüğü özel JSON hata mesajı gösterilir.
 
 ---
 
-## Video Çekim Teknikleri
-
-### Kişisel Tanıtım Bölümü
-- **Kamera Açısı:** Yüz net görünecek şekilde
-- **Işık:** Yüzün iyi aydınlatıldığından emin olun
-- **Arka Plan:** Temiz ve profesyonel görünüm
-- **Görüntü:** Omuz üstü çekim
-- **Göz Teması:** Kameraya bakarak konuşun
-
-### Demo Bölümü
-- **Ekran Kaydı:** Net ve yüksek çözünürlükte
-- **Ses:** Demo sırasında açıklama yapın
-- **Hız:** Yavaş ve anlaşılır hareket edin
-- **Vurgu:** Önemli noktaları işaret edin
+## 4. Sonuç ve Gelecek Hedefler (1 Dakika)
+* **Özet:** "Bu projede bir web uygulamasının tüm katmanlarını (Full-Stack) tek başıma kurguladım ve canlıya aldım."
+* **Gelecek:** "Sepet sistemi, ödeme entegrasyonu ve admin panelini bir sonraki aşamada eklemeyi planlıyorum."
+* **Kapanış:** "Dinlediğiniz için teşekkür ederim. Sorularınız varsa cevaplamaktan mutluluk duyarım."
 
 ---
 
-## Zaman Yönetimi
-
-- **Grup Lideri Açılış:** 1-2 dakika
-- **Her Ekip Üyesi:** 4-6 dakika
-  - Kişisel tanıtım: 30-45 saniye
-  - Gereksinim sunumu: 3.5-5 dakika
-    - Her gereksinim için: yaklaşık 1-1.5 dakika
-- **Grup Lideri Kapanış:** 1-2 dakika
-- **Toplam Süre:** Yaklaşık 30-40 dakika (5 kişilik ekip için)
