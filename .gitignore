@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 .DS_Store
 =======
 # Logs
@@ -26,3 +27,7 @@ dist-ssr
 *.sln
 *.sw?
 >>>>>>> cb3e7fc061b3d81836af59087d402ba96934a976
+=======
+node_modules/
+.env
+>>>>>>> a88b3b47b0ee1e178f4c2759e08e24867b8f0085
