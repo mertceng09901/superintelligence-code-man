@@ -1,16 +1,51 @@
-# React + Vite
+# Superintelligence-Code-Man - E-Ticaret Platformu
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Proje Hakkında
 
-Currently, two official plugins are available:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+![Superintelligence Code Man Banner](./superintelligence-code-man.png)
 
-## React Compiler
+**Proje Tanımı:**
+Superintelligence-Code-Man, kullanıcıların en güncel akıllı telefon modellerini güvenle inceleyip satın alabileceği, modern ve kullanıcı dostu bir e-ticaret platformudur. React tabanlı dinamik arayüzümüz sayesinde müşterilerimiz marka, model, fiyat ve donanım özelliklerine göre detaylı filtreleme yapabilir, aradıkları telefonu saniyeler içinde bulabilirler. Node.js ve Express.js altyapısıyla desteklenen güçlü arka planımız ve MongoDB veritabanımız, binlerce ürün verisini, kullanıcı sepetlerini ve sipariş geçmişlerini anlık ve güvenli bir şekilde yönetir. Hızlı teslimat, güvenli ödeme entegrasyonları ve gelişmiş kullanıcı paneli ile Superintelligence-Code-Man, mobil teknoloji alışverişini sorunsuz bir deneyime dönüştürmeyi hedefler.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+**Kullanılan Teknolojiler (MERN Stack):**
+* **Frontend:** React.js, TailwindCSS (veya tercih ettiğin UI kütüphanesi)
+* **Backend:** Node.js, Express.js
+* **Veritabanı:** MongoDB (Atlas), Mongoose
 
-## Expanding the ESLint configuration
+**Proje Kategorisi:**
+E-Ticaret
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+**Referans Uygulama:**
+Hepsiburada, Trendyol
+
+---
+
+## Proje Linkleri
+
+* **REST API Adresi:** [https://superintelligence-code-man.onrender.com](https://superintelligence-code-man.onrender.com) 
+* **Web Frontend Adresi:** [superintelligence-code-man.com](https://superintelligence-code-man.vercel.app) 
+
+---
+
+## Proje Ekibi
+
+**Grup Adı:** Super Tecno Grubu
+
+**Ekip Üyeleri:**
+* Mert Acar (Grup Lideri / Full-Stack Geliştirici)
+
+---
+
+## Dokümantasyon
+
+Proje dokümantasyonuna ve ekip üyelerinin bireysel görev dağılımlarına aşağıdaki linklerden erişebilirsiniz:
+
+* [Gereksinim Analizi](./Gereksinim-Analizi.md)
+* [REST API Tasarımı](./Rest-API.md)
+* [Web Front-End Dokümantasyonu](./WebFrontEnd.md)
+
+**Mert Acar Görevleri:**
+* [Mert-Acar-Gereksinimler](./Mert--Acar\Mert-Acar-Gereksinimler.md)
+* [Mert-Acar-Rest-API-Görevleri](./Mert--Acar\Mert-Acar-Rest-API-Gorevleri.md)
+* [Mert-Acar-Web-Frontend-Görevleri](./Mert--Acar\Mert-Acar-Web-Frontend-Gorevleri.md)
