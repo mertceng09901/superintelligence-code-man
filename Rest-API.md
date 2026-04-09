@@ -1,6 +1,6 @@
 # REST API Görev Dağılımı
 
-**REST API Adresi:** [api.superintelligenceCodeMan.com](https://api.Superintelligence)
+**REST API Adresi:** [https://superintelligence-code-man.onrender.com](https://superintelligence-code-man.onrender.com)
 
 Bu dokümanda, proje ekibindeki her üyenin geliştirmekten sorumlu olduğu REST API metotları listelenmektedir.
 
