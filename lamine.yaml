@@ -1,0 +1,399 @@
+openapi: 3.0.3
+info:
+  title: Superintelligence Code Man API
+  version: 1.0.0
+  description: >
+    Bu API, "Superintelligence Code Man" akıllı telefon e-ticaret platformunun
+    yönetilmesi için tasarlanmış bir RESTful servistir. Temel CRUD (Create, Read, 
+    Update, Delete) işlemlerini destekler. Telefonlar marka, donanım özellikleri ve 
+    fiyata göre detaylı sorgulanabilir; kullanıcılar sepet ve sipariş işlemlerini 
+    güvenle gerçekleştirebilir. API, JWT tabanlı kimlik doğrulama ile korunmaktadır.
+  contact:
+    name: Mert Acar
+    email: iletisim@superintelligence-code-man.com
+
+servers:
+  - url: https://api.superintelligence-code-man.com
+    description: Üretim sunucusu (Production)
+  - url: https://staging-api.superintelligence-code-man.com
+    description: Test sunucusu (Staging)
+  - url: http://localhost:3000
+    description: Yerel geliştirme sunucusu (Development)
+
+tags:
+  - name: Telefonlar
+    description: Akıllı telefon ekleme, listeleme, filtreleme, güncelleme ve silme işlemleri
+  - name: Siparişler
+    description: Sepetteki ürünler için sipariş oluşturma ve geçmişi görüntüleme işlemleri
+
+security:
+  - BearerAuth: []
+
+paths:
+  /api/products:
+    post:
+      tags:
+        - Telefonlar
+      summary: Yeni Telefon Ekle (Admin)
+      operationId: addProduct
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductInput'
+      responses:
+        "201":
+          description: Akıllı telefon başarıyla kataloga eklendi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        "400":
+          description: Geçersiz istek verisi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "401":
+          description: Kimlik doğrulama başarısız (token eksik veya geçersiz)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "403":
+          description: Bu işlem için yetkiniz bulunmuyor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    get:
+      tags:
+        - Telefonlar
+      summary: Telefonları Listele ve Filtrele
+      operationId: listProducts
+      parameters:
+        - name: brand
+          in: query
+          required: false
+          description: Markaya göre filtrele (Örn. Apple, Samsung)
+          schema:
+            type: string
+          example: "Apple"
+        - name: minPrice
+          in: query
+          required: false
+          description: Minimum fiyat limiti
+          schema:
+            type: number
+            format: float
+          example: 40000
+        - name: page
+          in: query
+          required: false
+          description: Sayfa numarası (varsayılan 1)
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+          example: 1
+        - name: limit
+          in: query
+          required: false
+          description: Sayfa başına sonuç sayısı (varsayılan 10, maksimum 50)
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 50
+            default: 10
+          example: 10
+      responses:
+        "200":
+          description: Telefonlar başarıyla listelendi
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Product'
+        "400":
+          description: Geçersiz filtre parametreleri
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/products/{productid}:
+    parameters:
+      - name: productid
+        in: path
+        required: true
+        description: Telefonun benzersiz kimlik numarası (MongoDB ObjectId)
+        schema:
+          type: string
+        example: "60d5ec49f1b2c8b1f8e4e1a1"
+
+    get:
+      tags:
+        - Telefonlar
+      summary: Telefon Detayı Getir
+      operationId: getProduct
+      responses:
+        "200":
+          description: Telefon detayı başarıyla getirildi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        "404":
+          description: Telefon bulunamadı
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    put:
+      tags:
+        - Telefonlar
+      summary: Telefon Bilgilerini Güncelle (Admin)
+      operationId: updateProduct
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductInput'
+      responses:
+        "200":
+          description: Telefon başarıyla güncellendi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        "400":
+          description: Geçersiz istek verisi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "401":
+          description: Kimlik doğrulama başarısız (token eksik veya geçersiz)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "403":
+          description: Bu işlem için yetkiniz bulunmuyor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "404":
+          description: Telefon bulunamadı
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    delete:
+      tags:
+        - Telefonlar
+      summary: Telefonu Katalogdan Sil (Admin)
+      operationId: deleteProduct
+      responses:
+        "204":
+          description: Telefon başarıyla silindi
+        "401":
+          description: Kimlik doğrulama başarısız
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "403":
+          description: Bu işlem için yetkiniz bulunmuyor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "404":
+          description: Telefon bulunamadı
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/orders:
+    get:
+      tags:
+        - Siparişler
+      summary: Sipariş Geçmişini Listele
+      operationId: listOrders
+      parameters:
+        - name: page
+          in: query
+          required: false
+          description: Sayfa numarası (varsayılan 1)
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+          example: 1
+      responses:
+        "200":
+          description: Siparişler başarıyla listelendi
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Order'
+        "401":
+          description: Kimlik doğrulama başarısız
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    post:
+      tags:
+        - Siparişler
+      summary: Yeni Sipariş Oluştur
+      operationId: createOrder
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderInput'
+      responses:
+        "201":
+          description: Sipariş başarıyla oluşturuldu ve ödeme alındı
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        "400":
+          description: Geçersiz ödeme veya adres verisi
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        "401":
+          description: Kimlik doğrulama başarısız
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 'JWT tabanlı kimlik doğrulama. İstek başlığına "Authorization: Bearer <token>" eklenmeli.'
+
+  schemas:
+    Product:
+      type: object
+      description: Akıllı telefon bilgilerini temsil eden model
+      properties:
+        _id:
+          type: string
+          description: Ürünün benzersiz kimlik numarası (otomatik atanır)
+          example: "60d5ec49f1b2c8b1f8e4e1a1"
+        brand:
+          type: string
+          description: Telefonun markası
+          example: "Apple"
+        model:
+          type: string
+          description: Telefonun modeli
+          example: "iPhone 15 Pro"
+        price:
+          type: number
+          format: float
+          description: Telefonun satış fiyatı (TL)
+          example: 65000
+        stock:
+          type: integer
+          description: Güncel stok adedi
+          example: 45
+        specs:
+          type: object
+          description: Telefonun donanım özellikleri
+          properties:
+            ram:
+              type: string
+              example: "8GB"
+            storage:
+              type: string
+              example: "256GB"
+      required:
+        - brand
+        - model
+        - price
+        - stock
+
+    ProductInput:
+      type: object
+      description: Akıllı telefon oluşturma veya güncelleme isteği için veri
+      properties:
+        brand:
+          type: string
+          description: Telefonun markası
+          minLength: 2
+          example: "Apple"
+        model:
+          type: string
+          description: Telefonun modeli
+          minLength: 2
+          example: "iPhone 15 Pro"
+        price:
+          type: number
+          format: float
+          description: Telefonun satış fiyatı (TL)
+          minimum: 0
+          example: 65000
+        stock:
+          type: integer
+          description: Eklenecek stok adedi
+          minimum: 0
+          example: 45
+        specs:
+          type: object
+          properties:
+            ram:
+              type: string
+              example: "8GB"
+            storage:
+              type: string
+              example: "256GB"
+      required:
+        - brand
+        - model
+        - price
+        - stock
+
+    Order:
+      type: object
+      description: Sipariş bilgilerini temsil eden model
+      properties:
+        _id:
+          type: string
+          description: Siparişin benzersiz kimlik numarası
+          example: "ord_8912"
+        totalAmount:
+          type: number
+          format: float
+          description: Siparişin toplam tutarı
+          example: 65000
+        deliveryStatus:
+          type: string
+          description: Kargo durumu
+          example: "Hazırlanıyor"
+        createdOn:
+          type: string
+          format: date-time
+          description: Sipariş tarihi (ISO 8601 formatında)
+          example: "2023-06-15T10:30:00Z"
