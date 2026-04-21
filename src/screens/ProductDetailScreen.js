@@ -1,43 +1,102 @@
-import React from 'react';
-import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
-import { useCart } from '../context/CartContext'; // 1. Context'i import et
+import axios from 'axios';
+import { useEffect, useState } from 'react';
+import {
+  ActivityIndicator,
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
+} from 'react-native';
 
 export default function ProductDetailScreen({ route, navigation }) {
-  const { product } = route.params;
-  const { addToCart } = useCart(); // 2. Depodaki addToCart fonksiyonunu çek
+  const { productId } = route.params;
+  const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  const handleAddToCart = () => {
-    addToCart(product); // 3. Ürünü depoya gönder
-    Alert.alert("Başarılı", `${product.name} sepete eklendi!`);
+  useEffect(() => {
+    fetchProduct();
+  }, []);
+
+  const fetchProduct = async () => {
+    try {
+      const response = await axios.get(
+        `https://superintelligence-code-man.onrender.com/api/products/${productId}`
+      );
+      // Backend { product: {...} } veya direkt {...} dönebilir, ikisini de handle ediyoruz
+      setProduct(response.data.product || response.data);
+    } catch (error) {
+      console.log('Ürün detayı yüklenemedi:', error.message);
+    } finally {
+      setLoading(false);
+    }
   };
+
+  if (loading) {
+    return (
+      <View style={styles.center}>
+        <ActivityIndicator size="large" color="#007bff" />
+      </View>
+    );
+  }
+
+  if (!product) {
+    return (
+      <View style={styles.center}>
+        <Text style={styles.errorText}>Ürün bulunamadı.</Text>
+      </View>
+    );
+  }
 
   return (
     <ScrollView style={styles.container}>
-      <Image source={{ uri: product.image || 'https://via.placeholder.com/400' }} style={styles.image} />
-      <View style={styles.detailsContainer}>
-        <Text style={styles.title}>{product.name}</Text>
-        <Text style={styles.price}>{product.price} ₺</Text>
-        <Text style={styles.descriptionHeader}>Ürün Açıklaması</Text>
-        <Text style={styles.description}>{product.description || "Bu ürün için henüz bir açıklama girilmemiştir."}</Text>
+      <Image
+        source={{ uri: product.imageUrl || product.image || 'https://via.placeholder.com/300' }}
+        style={styles.image}
+      />
 
-        {/* 4. Butona tıklayınca handleAddToCart çalışsın */}
-        <TouchableOpacity style={styles.button} onPress={handleAddToCart}>
-          <Text style={styles.buttonText}>Sepete Ekle</Text>
+      <View style={styles.infoBox}>
+        <Text style={styles.brand}>{product.brand}</Text>
+        <Text style={styles.model}>{product.model}</Text>
+        <Text style={styles.price}>{product.price} ₺</Text>
+
+        {product.specs && (
+          <View style={styles.specs}>
+            <Text style={styles.specsTitle}>Özellikler</Text>
+            <Text style={styles.specItem}>💾 RAM: {product.specs.ram}</Text>
+            <Text style={styles.specItem}>📦 Depolama: {product.specs.storage}</Text>
+          </View>
+        )}
+
+        <Text style={styles.stock}>
+          {product.stock > 0 ? `✅ Stokta: ${product.stock} adet` : '❌ Stok yok'}
+        </Text>
+
+        <TouchableOpacity style={styles.addToCart}>
+          <Text style={styles.addToCartText}>Sepete Ekle</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>
   );
 }
 
-// ... styles kısmı aynı kalacak ...
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff' },
-  image: { width: '100%', height: 350, resizeMode: 'cover' },
-  detailsContainer: { padding: 20 },
-  title: { fontSize: 24, fontWeight: 'bold', color: '#333', marginBottom: 10 },
-  price: { fontSize: 28, color: '#28a745', fontWeight: 'bold', marginBottom: 20 },
-  descriptionHeader: { fontSize: 18, fontWeight: 'bold', color: '#555', marginBottom: 10 },
-  description: { fontSize: 16, color: '#666', lineHeight: 24, marginBottom: 30 },
-  button: { backgroundColor: '#007bff', padding: 15, borderRadius: 10, alignItems: 'center' },
-  buttonText: { color: '#fff', fontSize: 18, fontWeight: 'bold' },
+  container: { flex: 1, backgroundColor: '#f5f5f5' },
+  center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  image: { width: '100%', height: 300, resizeMode: 'contain', backgroundColor: '#fff' },
+  infoBox: { backgroundColor: '#fff', margin: 10, borderRadius: 12, padding: 16, elevation: 2 },
+  brand: { fontSize: 14, color: '#888', marginBottom: 4 },
+  model: { fontSize: 22, fontWeight: 'bold', color: '#222', marginBottom: 8 },
+  price: { fontSize: 26, fontWeight: 'bold', color: '#28a745', marginBottom: 16 },
+  specs: { backgroundColor: '#f0f4ff', borderRadius: 8, padding: 12, marginBottom: 16 },
+  specsTitle: { fontWeight: 'bold', fontSize: 15, marginBottom: 8, color: '#333' },
+  specItem: { fontSize: 14, color: '#555', marginBottom: 4 },
+  stock: { fontSize: 14, color: '#555', marginBottom: 20 },
+  addToCart: {
+    backgroundColor: '#007bff', borderRadius: 10,
+    paddingVertical: 14, alignItems: 'center'
+  },
+  addToCartText: { color: '#fff', fontSize: 16, fontWeight: 'bold' },
+  errorText: { fontSize: 16, color: 'gray' },
 });

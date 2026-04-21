@@ -14,16 +14,11 @@ export default function HomeScreen({ navigation }) {
     try {
       setLoading(true);
       const response = await axios.get('https://superintelligence-code-man.onrender.com/api/products');
-      
-      // LOGLARDA GÖRDÜĞÜMÜZ YAPIYA GÖRE VERİYİ ÇEKİYORUZ:
-      // response.data'nın içindeki "products" dizisini al diyoruz.
       if (response.data && response.data.products) {
         setProducts(response.data.products);
-        console.log("Ürünler başarıyla state'e aktarıldı:", response.data.products.length);
       } else {
         console.log("Veri yapısı beklenenden farklı geldi!");
       }
-
     } catch (error) {
       console.log("Hata:", error.message);
     } finally {
@@ -34,14 +29,13 @@ export default function HomeScreen({ navigation }) {
   const renderProduct = ({ item }) => (
     <TouchableOpacity 
       style={styles.card}
-      onPress={() => navigation.navigate('ProductDetail', { product: item })}
+      onPress={() => navigation.navigate('ProductDetail', { productId: item._id })} // ✅ sadece ID
     >
-      {/* Resim linki item.image içinde mi yoksa item.imageUrl mi? Web kodunla aynı olmalı */}
       <Image 
-        source={{ uri: item.image || 'https://via.placeholder.com/150' }} 
+        source={{ uri: item.imageUrl || item.image || 'https://via.placeholder.com/150' }} 
         style={styles.img} 
       />
-      <Text style={styles.name} numberOfLines={2}>{item.name}</Text>
+      <Text style={styles.name} numberOfLines={2}>{item.model}</Text>
       <Text style={styles.price}>{item.price} ₺</Text>
     </TouchableOpacity>
   );

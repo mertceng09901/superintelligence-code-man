@@ -1,62 +1,62 @@
-# Ali Tutar'ın Mobil Backend Görevleri
-**Mobil Front-end ile Back-end Bağlanmış Test Videosu:** [Link buraya eklenecek](https://example.com)
+# 🚀 Superintelligence Mobile 
 
-## 1. Üye Olma (Kayıt) Servisi
-- **API Endpoint:** `POST /auth/register`
-- **Görev:** Mobil uygulamada kullanıcı kayıt işlemini gerçekleştiren servis entegrasyonu
-- **İşlevler:**
-  - Kullanıcı bilgilerini (email, password, firstName, lastName) toplama
-  - Form validasyonu (email formatı, şifre güvenliği kontrolü)
-  - API'ye POST isteği gönderme
-  - Başarılı kayıt durumunda kullanıcıyı giriş ekranına yönlendirme
-  - Hata durumlarını yakalama ve kullanıcıya gösterilmesi (409 Conflict, 400 Bad Request)
-- **Teknik Detaylar:**
-  - HTTP Client kullanımı (Retrofit/OkHttp - Android, URLSession/Alamofire - iOS)
-  - Request/Response model sınıfları oluşturma
-  - Error handling ve retry mekanizması
-  - Loading state yönetimi
+**Proje Sahibi:** Mert Acar  
 
-## 2. Kullanıcı Bilgilerini Görüntüleme Servisi
-- **API Endpoint:** `GET /users/{userId}`
-- **Görev:** Kullanıcı profil bilgilerini API'den çekip mobil uygulamada gösterme
-- **İşlevler:**
-  - JWT token ile kimlik doğrulama
-  - Kullanıcı ID'sini kullanarak profil bilgilerini getirme
-  - Gelen veriyi parse edip UI'da gösterme
-  - Token süresi dolmuşsa refresh token ile yenileme
-  - Offline durumda cache'den veri gösterme
-- **Teknik Detaylar:**
-  - Authentication header ekleme (Bearer Token)
-  - Response caching stratejisi
-  - Token refresh mekanizması
-  - Error handling (401 Unauthorized, 403 Forbidden, 404 Not Found)
+---
 
-## 3. Kullanıcı Bilgilerini Güncelleme Servisi
-- **API Endpoint:** `PUT /users/{userId}`
-- **Görev:** Kullanıcı profil bilgilerini güncelleme işlemini gerçekleştirme
-- **İşlevler:**
-  - Profil düzenleme ekranından gelen verileri toplama
-  - Form validasyonu (email formatı, telefon formatı vb.)
-  - API'ye PUT isteği gönderme
-  - Başarılı güncelleme sonrası cache'i güncelleme
-  - Optimistic UI update (kullanıcı deneyimini iyileştirme)
-- **Teknik Detaylar:**
-  - Request body oluşturma (firstName, lastName, email, phone)
-  - Partial update desteği (yalnızca değişen alanları gönderme)
-  - Conflict resolution (eşzamanlı güncelleme durumları)
-  - Error handling ve kullanıcı bildirimleri
+# 📱 Superintelligence Mobile - UI/UX ve Backend Eşleşme Raporu
 
-## 4. Kullanıcı Silme Servisi
-- **API Endpoint:** `DELETE /users/{userId}`
-- **Görev:** Kullanıcı hesabını silme işlemini gerçekleştirme
-- **İşlevler:**
-  - Kullanıcıya silme işlemi için onay dialog'u gösterme
-  - API'ye DELETE isteği gönderme
-  - Başarılı silme sonrası local storage ve cache'i temizleme
-  - Kullanıcıyı login ekranına yönlendirme
-  - Token'ı geçersiz kılma
-- **Teknik Detaylar:**
-  - Destructive action için confirmation dialog
-  - Local data cleanup (SharedPreferences/UserDefaults, cache, database)
-  - Logout işlemi entegrasyonu
-  - Error handling (401, 403, 404)
+**Proje:** Superintelligence E-Ticaret Mobil Uygulaması  
+**Backend Altyapısı:** Node.js, Express, MongoDB  
+**Mobil Backend Sorumlusu:** Mert Acar
+**Sistem Mimarisi:** React Native (Frontend) + Node.js/Express (Backend) + MongoDB (Database)  
+**Backend URL:** `https://superintelligence-code-man.onrender.com`
+
+
+---
+
+## 1. Üye Olma (Kayıt) Ekranı
+*Kullanıcının sisteme dahil olduğu ekran.*
+
+- **API Endpoint:** `POST /api/auth/register`
+- **UI Bileşenleri (İstek Gövdesi - req.body):**
+  - **Ad & Soyad:** `firstName`, `lastName`
+  - **İletişim:** `email`, `phone` (Telefon alanı eklendi!)
+  - **Güvenlik:** `password`, Şifre Tekrar.
+- **Kritik UI Kuralı:** Eğer backend'den `400 Bad Request` ("Bu e-posta adresi zaten kullanımda.") hatası gelirse, formun altında kırmızı bir uyarı metni çıkmalıdır.
+- **Başarı Durumu:** Kayıt başarılıysa dönen `token`, `AsyncStorage` içine kaydedilir.
+
+## 2. Kullanıcı Profil ve Bilgi Güncelleme
+*Kullanıcı verilerinin yönetimi (E-posta değiştirilemez).*
+
+- **API Endpoint'leri:** - Görüntüleme: `GET /api/auth/profile` veya `GET /api/users/profile`
+  - Güncelleme: `PUT /api/users/profile`
+- **UI Bileşenleri:**
+  - **Sabit Alan:** E-posta adresi ekranda görünür ancak **düzenlenemez** (Backend kısıtlaması).
+  - **Düzenlenebilir Alanlar (req.body):** `firstName`, `lastName`, `phone`.
+- **UX Davranışı:** `updateProfile` başarılı olduğunda (200 OK), güncel bilgiler state'e yazılır ve ekranda anında değişir.
+
+## 3. Sepet Yönetimi (Ürün Ekleme, Güncelleme, Silme)
+*`Cart.js` modeline tam uyumlu sepet ekranı.*
+
+- **API Endpoint'leri:**
+  - Sepeti Getir: `GET /api/cart`
+  - Sepete Ekle/Güncelle: `POST /api/cart/add` (veya benzeri)
+  - Ürün Çıkar: `DELETE /api/cart/:productId`
+- **UI Bileşenleri (Sepete Eklerken req.body):**
+  - `productId`: Ürünün ID'si.
+  - `quantity`: Seçilen adet (Artı/Eksi butonlarıyla belirlenir).
+  - `selectedColor`: Ürünün rengi (Örn: "Titanium" - Dropdown veya renk butonlarından seçilir).
+- **UX Davranışı:** - Çöp tenekesi ikonuna basıldığında `DELETE` isteği atılır. `totalAmount` backend'den yeniden döner (populate edilmiş şekilde) ve ekrandaki "Ara Toplam" güncellenir.
+
+## 4. Sipariş ve Ödeme Ekranı (Checkout)
+*Siparişi veritabanına yazdırma aşaması.*
+
+- **API Endpoint'leri:**
+  - Özet Çekme: `GET /api/orders/checkout-summary`
+  - Sipariş Oluşturma: `POST /api/orders`
+- **UI Bileşenleri (Sipariş Oluştururken req.body):**
+  - `shippingAddress`: Kullanıcının gireceği açık adres input alanı.
+  - `paymentMethod`: Ödeme yöntemi seçimi (Kredi Kartı, Havale vb. Radio butonları).
+  - **Fatura Özeti:** `getCheckoutSummary`'den dönen `totalAmount` gösterimi.
+- **Başarı Durumu:** Sipariş oluştuğunda (201 Created), sepet backend tarafında otomatik temizlendiği için mobil tarafta da sepet state'i sıfırlanır ve "Sipariş Başarılı" ekranına yönlendirilir.
