@@ -1,0 +1,30 @@
+# Node.js 20 imajı (react-router-dom 7.x uyumluluğu için)
+FROM node:20-alpine
+
+# Konteyner içindeki çalışma dizinini belirliyoruz
+WORKDIR /app
+
+# Bağımlılık listesini kopyalıyoruz (cache avantajı için)
+COPY package.json package-lock.json ./
+
+# Bağımlılıkları yüklüyoruz
+RUN npm install
+
+# Sadece frontend için gerekli dosyaları kopyalıyoruz
+# (app.json, expo config gibi dosyalar kopyalanMAZ)
+COPY index.html ./
+COPY vite.config.js ./
+COPY src/main.jsx ./src/main.jsx
+COPY src/index.css ./src/index.css
+COPY src/App.jsx ./src/App.jsx
+COPY src/App.css ./src/App.css
+COPY src/services/ ./src/services/
+COPY src/pages/ ./src/pages/
+COPY src/components/ ./src/components/
+COPY src/context/ ./src/context/
+
+# Vite dev server'ın dinleyeceği portu açıyoruz
+EXPOSE 3000
+
+# Vite dev server'ı başlatıyoruz
+CMD ["npx", "vite", "--host", "0.0.0.0", "--port", "3000"]

@@ -1,0 +1,21 @@
+# Node.js 20 imajı (bcryptjs 3.x ve mongoose 9.x uyumluluğu için)
+FROM node:20-alpine
+
+# Konteyner içindeki çalışma dizinini belirliyoruz
+WORKDIR /app
+
+# Bağımlılık listesini kopyalıyoruz (cache avantajı için)
+COPY package*.json ./
+
+# Bağımlılıkları yüklüyoruz
+RUN npm install
+
+# Backend kodunu kopyalıyoruz
+COPY server.js ./
+COPY src/ ./src/
+
+# API'nin dinleyeceği portu dışarı açıyoruz
+EXPOSE 9000
+
+# Uygulamayı başlatıyoruz
+CMD ["node", "server.js"]

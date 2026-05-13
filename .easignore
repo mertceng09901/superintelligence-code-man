@@ -1,0 +1,23 @@
+# Backend ve gereksiz dosyaları EAS build'den hariç tut
+node_modules
+.env
+server.js
+Dockerfile.backend
+Dockerfile.frontend
+docker-compose.yaml
+src/config/db.js
+src/config/redisClient.js
+src/config/rabbitmq.js
+src/controllers/
+src/models/
+src/routes/
+src/middlewares/
+src/services/api.js
+src/pages/
+src/App.jsx
+src/main.jsx
+src/seed.js
+src/utils/generateToken.js
+src/app.js
+vite.config.js
+index.html

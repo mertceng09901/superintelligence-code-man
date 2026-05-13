@@ -1,0 +1,122 @@
+# ============================================
+# MobilCepte — Docker Compose (Backend + Altyapı)
+# ============================================
+# Kullanım: docker compose up --build
+# Seed:     docker exec mobil_backend node src/seed.js
+
+services:
+  # ============================================
+  # MOBILE FRONTEND (Vite + React — Web Versiyonu)
+  # ============================================
+  mobil_frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: superintelligence_frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - VITE_API_URL=http://localhost:9000/api
+    networks:
+      - mobilcepte_network
+    depends_on:
+      mobil_backend:
+        condition: service_started
+
+  # ============================================
+  # BACKEND (Node.js + Express)
+  # ============================================
+  mobil_backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    container_name: mobil_backend
+    ports:
+      - "9000:9000"
+    environment:
+      - PORT=9000
+      - MONGO_URI=mongodb://mongo:27017/mobilcepte
+      - JWT_SECRET=super_gizli_anahtar_kelimeniz_123!
+      - REDIS_URL=redis://redis:6379
+      - RABBITMQ_URL=amqp://rabbitmq:5672
+      - NODE_ENV=development
+    networks:
+      - mobilcepte_network
+    depends_on:
+      mongo:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # ============================================
+  # MONGODB — Veritabanı
+  # ============================================
+  mongo:
+    image: mongo:latest
+    container_name: mobil_mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - mobilcepte_network
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  # ============================================
+  # REDIS — Cache ve Session Yönetimi
+  # ============================================
+  redis:
+    image: redis:latest
+    container_name: mobil_redis
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    networks:
+      - mobilcepte_network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+
+  # ============================================
+  # RABBITMQ — Mesaj Kuyruğu (Sipariş İşleme)
+  # ============================================
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: mobil_rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    networks:
+      - mobilcepte_network
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "check_running"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 20s
+
+# Servislerin birbiriyle haberleşeceği özel bridge network
+networks:
+  mobilcepte_network:
+    driver: bridge
+
+# Kalıcı disk alanları
+volumes:
+  mongo_data:
+  redis_data:
