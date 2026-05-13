@@ -6,7 +6,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 // Her zaman Render'daki canlı backend'e bağlanır
 // ============================================
 // Local geliştirme ve Docker üzerinden test etmek için makinenizin yerel IP adresi:
-const API_BASE_URL = 'http://10.215.149.93:9000/api';
+// const API_BASE_URL = 'http://10.215.149.93:9000/api';
+// Canlı backend adresi:
+const API_BASE_URL = 'https://superintelligence-code-man.onrender.com/api';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
