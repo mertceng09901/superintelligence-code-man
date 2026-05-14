@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import {
   View, Text, ScrollView, TextInput, TouchableOpacity, StyleSheet,
-  Alert, ActivityIndicator, StatusBar, Image
+  Alert, ActivityIndicator, StatusBar, Image, KeyboardAvoidingView, Platform
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
@@ -48,7 +48,7 @@ export default function CheckoutScreen({ navigation }) {
 
   const handlePlaceOrder = async () => {
     if (!address.trim()) { Alert.alert('Uyarı', 'Lütfen teslimat adresini girin.'); return; }
-    
+
     if (paymentMethod === 'CREDIT_CARD') {
       if (!cardName.trim() || !cardNumber.trim() || !expiry.trim() || !cvv.trim()) {
         Alert.alert('Uyarı', 'Lütfen kredi kartı bilgilerini eksiksiz girin.');
@@ -82,70 +82,72 @@ export default function CheckoutScreen({ navigation }) {
         <Text style={s.headerTitle}>Sipariş Tamamla</Text>
       </LinearGradient>
 
-      <ScrollView contentContainerStyle={s.scroll} showsVerticalScrollIndicator={false}>
-        {/* Order Items */}
-        <View style={[s.card, SHADOWS.small]}>
-          <View style={s.cardHead}><Ionicons name="receipt-outline" size={20} color={COLORS.primary} /><Text style={s.cardTitle}>Sipariş Özeti</Text></View>
-          {summary?.items?.map((item, i) => (
-            <View key={i} style={s.row}>
-              <Image source={{ uri: item.product?.imageUrl || 'https://via.placeholder.com/50' }} style={s.thumb} />
-              <View style={{ flex: 1, marginLeft: 12 }}>
-                <Text style={s.itemName} numberOfLines={1}>{item.product?.brand} {item.product?.model}</Text>
-                <Text style={s.itemQty}>Adet: {item.quantity}</Text>
-              </View>
-              <Text style={s.itemTotal}>{fmt((item.product?.price || 0) * item.quantity)} ₺</Text>
-            </View>
-          ))}
-          <View style={s.divider} />
-          <View style={s.totalRow}><Text style={s.totalLbl}>Toplam</Text><Text style={s.totalVal}>{fmt(summary?.totalAmount || 0)} ₺</Text></View>
-        </View>
-
-        {/* Address */}
-        <View style={[s.card, SHADOWS.small]}>
-          <View style={s.cardHead}><Ionicons name="location-outline" size={20} color={COLORS.secondary} /><Text style={s.cardTitle}>Teslimat Adresi</Text></View>
-          <TextInput style={s.addrInput} placeholder="Adresinizi girin..." placeholderTextColor={COLORS.textMuted}
-            value={address} onChangeText={setAddress} multiline numberOfLines={3} textAlignVertical="top" />
-        </View>
-
-        {/* Payment */}
-        <View style={[s.card, SHADOWS.small]}>
-          <View style={s.cardHead}><Ionicons name="wallet-outline" size={20} color={COLORS.warning} /><Text style={s.cardTitle}>Ödeme</Text></View>
-          {[{ id: 'CREDIT_CARD', lbl: 'Kredi Kartı', ic: 'card-outline' }, { id: 'CASH', lbl: 'Kapıda Ödeme', ic: 'cash-outline' }].map(o => (
-            <View key={o.id}>
-              <TouchableOpacity style={[s.payOpt, paymentMethod === o.id && s.payOptActive]} onPress={() => setPaymentMethod(o.id)}>
-                <Ionicons name={o.ic} size={22} color={paymentMethod === o.id ? COLORS.primary : COLORS.textMuted} />
-                <Text style={[s.payLbl, paymentMethod === o.id && { color: COLORS.text, fontWeight: '600' }]}>{o.lbl}</Text>
-                <View style={[s.radio, paymentMethod === o.id && s.radioA]}>{paymentMethod === o.id && <View style={s.radioDot} />}</View>
-              </TouchableOpacity>
-              
-              {/* Kredi Kartı Formu */}
-              {o.id === 'CREDIT_CARD' && paymentMethod === 'CREDIT_CARD' && (
-                <View style={s.cardForm}>
-                  <TextInput style={s.cardInput} placeholder="Kart Üzerindeki İsim" placeholderTextColor={COLORS.textMuted} value={cardName} onChangeText={setCardName} autoCapitalize="words" />
-                  <TextInput style={s.cardInput} placeholder="Kart Numarası" placeholderTextColor={COLORS.textMuted} value={cardNumber} onChangeText={handleCardNumberChange} keyboardType="numeric" maxLength={19} />
-                  <View style={s.cardRow}>
-                    <TextInput style={[s.cardInput, { flex: 1, marginRight: 8 }]} placeholder="AA/YY" placeholderTextColor={COLORS.textMuted} value={expiry} onChangeText={handleExpiryChange} keyboardType="numeric" maxLength={5} />
-                    <TextInput style={[s.cardInput, { flex: 1, marginLeft: 8 }]} placeholder="CVV" placeholderTextColor={COLORS.textMuted} value={cvv} onChangeText={setCvv} keyboardType="numeric" maxLength={3} secureTextEntry />
-                  </View>
+      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
+        <ScrollView contentContainerStyle={s.scroll} showsVerticalScrollIndicator={false}>
+          {/* Order Items */}
+          <View style={[s.card, SHADOWS.small]}>
+            <View style={s.cardHead}><Ionicons name="receipt-outline" size={20} color={COLORS.primary} /><Text style={s.cardTitle}>Sipariş Özeti</Text></View>
+            {summary?.items?.map((item, i) => (
+              <View key={i} style={s.row}>
+                <Image source={{ uri: item.product?.imageUrl || 'https://via.placeholder.com/50' }} style={s.thumb} />
+                <View style={{ flex: 1, marginLeft: 12 }}>
+                  <Text style={s.itemName} numberOfLines={1}>{item.product?.brand} {item.product?.model}</Text>
+                  <Text style={s.itemQty}>Adet: {item.quantity}</Text>
                 </View>
-              )}
-            </View>
-          ))}
-        </View>
+                <Text style={s.itemTotal}>{fmt((item.product?.price || 0) * item.quantity)} ₺</Text>
+              </View>
+            ))}
+            <View style={s.divider} />
+            <View style={s.totalRow}><Text style={s.totalLbl}>Toplam</Text><Text style={s.totalVal}>{fmt(summary?.totalAmount || 0)} ₺</Text></View>
+          </View>
 
-        <View style={s.infoBox}>
-          <Ionicons name="information-circle-outline" size={16} color={COLORS.info} />
-          <Text style={s.infoTxt}>Sipariş RabbitMQ kuyruğu üzerinden işlenecek ve Redis cache güncellenecektir.</Text>
-        </View>
-      </ScrollView>
+          {/* Address */}
+          <View style={[s.card, SHADOWS.small]}>
+            <View style={s.cardHead}><Ionicons name="location-outline" size={20} color={COLORS.secondary} /><Text style={s.cardTitle}>Teslimat Adresi</Text></View>
+            <TextInput style={s.addrInput} placeholder="Adresinizi girin..." placeholderTextColor={COLORS.textMuted}
+              value={address} onChangeText={setAddress} multiline numberOfLines={3} textAlignVertical="top" />
+          </View>
 
-      <View style={[s.bottom, SHADOWS.large]}>
-        <TouchableOpacity onPress={handlePlaceOrder} disabled={placing} activeOpacity={0.8} style={{ flex: 1 }}>
-          <LinearGradient colors={COLORS.gradientSecondary} style={s.orderBtn} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}>
-            {placing ? <ActivityIndicator color="#FFF" /> : <><Ionicons name="checkmark-circle" size={20} color="#FFF" /><Text style={s.orderTxt}>Onayla — {fmt(summary?.totalAmount || 0)} ₺</Text></>}
-          </LinearGradient>
-        </TouchableOpacity>
-      </View>
+          {/* Payment */}
+          <View style={[s.card, SHADOWS.small]}>
+            <View style={s.cardHead}><Ionicons name="wallet-outline" size={20} color={COLORS.warning} /><Text style={s.cardTitle}>Ödeme</Text></View>
+            {[{ id: 'CREDIT_CARD', lbl: 'Kredi Kartı', ic: 'card-outline' }, { id: 'CASH', lbl: 'Kapıda Ödeme', ic: 'cash-outline' }].map(o => (
+              <View key={o.id}>
+                <TouchableOpacity style={[s.payOpt, paymentMethod === o.id && s.payOptActive]} onPress={() => setPaymentMethod(o.id)}>
+                  <Ionicons name={o.ic} size={22} color={paymentMethod === o.id ? COLORS.primary : COLORS.textMuted} />
+                  <Text style={[s.payLbl, paymentMethod === o.id && { color: COLORS.text, fontWeight: '600' }]}>{o.lbl}</Text>
+                  <View style={[s.radio, paymentMethod === o.id && s.radioA]}>{paymentMethod === o.id && <View style={s.radioDot} />}</View>
+                </TouchableOpacity>
+
+                {/* Kredi Kartı Formu */}
+                {o.id === 'CREDIT_CARD' && paymentMethod === 'CREDIT_CARD' && (
+                  <View style={s.cardForm}>
+                    <TextInput style={s.cardInput} placeholder="Kart Üzerindeki İsim" placeholderTextColor={COLORS.textMuted} value={cardName} onChangeText={setCardName} autoCapitalize="words" />
+                    <TextInput style={s.cardInput} placeholder="Kart Numarası" placeholderTextColor={COLORS.textMuted} value={cardNumber} onChangeText={handleCardNumberChange} keyboardType="numeric" maxLength={19} />
+                    <View style={s.cardRow}>
+                      <TextInput style={[s.cardInput, { flex: 1, marginRight: 8 }]} placeholder="AA/YY" placeholderTextColor={COLORS.textMuted} value={expiry} onChangeText={handleExpiryChange} keyboardType="numeric" maxLength={5} />
+                      <TextInput style={[s.cardInput, { flex: 1, marginLeft: 8 }]} placeholder="CVV" placeholderTextColor={COLORS.textMuted} value={cvv} onChangeText={setCvv} keyboardType="numeric" maxLength={3} secureTextEntry />
+                    </View>
+                  </View>
+                )}
+              </View>
+            ))}
+          </View>
+
+          <View style={s.infoBox}>
+            <Ionicons name="information-circle-outline" size={16} color={COLORS.info} />
+            <Text style={s.infoTxt}>Sipariş RabbitMQ kuyruğu üzerinden işlenecek ve Redis cache güncellenecektir.</Text>
+          </View>
+        </ScrollView>
+
+        <View style={[s.bottom, SHADOWS.large]}>
+          <TouchableOpacity onPress={handlePlaceOrder} disabled={placing} activeOpacity={0.8} style={{ flex: 1 }}>
+            <LinearGradient colors={COLORS.gradientSecondary} style={s.orderBtn} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}>
+              {placing ? <ActivityIndicator color="#FFF" /> : <><Ionicons name="checkmark-circle" size={20} color="#FFF" /><Text style={s.orderTxt}>Onayla — {fmt(summary?.totalAmount || 0)} ₺</Text></>}
+            </LinearGradient>
+          </TouchableOpacity>
+        </View>
+      </KeyboardAvoidingView>
     </View>
   );
 }
@@ -155,7 +157,7 @@ const s = StyleSheet.create({
   center: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: COLORS.background },
   header: { paddingTop: 50, paddingBottom: 18, paddingHorizontal: 20, flexDirection: 'row', alignItems: 'center', gap: 14, borderBottomLeftRadius: 24, borderBottomRightRadius: 24 },
   headerTitle: { fontSize: 22, fontWeight: '800', color: '#FFF' },
-  scroll: { padding: 16, paddingBottom: 100 },
+  scroll: { padding: 16, paddingBottom: 40 },
   card: { backgroundColor: '#FFF', borderRadius: SIZES.radius, padding: 18, marginBottom: 14 },
   cardHead: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 14 },
   cardTitle: { fontSize: 16, fontWeight: '700', color: COLORS.text },

@@ -7,7 +7,7 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../context/AuthContext';
-import { COLORS, SHADOWS, SIZES } from '../config/theme';
+import { COLORS, SIZES } from '../config/theme';
 
 const { width, height } = Dimensions.get('window');
 
@@ -64,7 +64,7 @@ export default function LoginScreen({ navigation }) {
             <LinearGradient colors={COLORS.gradient} style={styles.logoCircle}>
               <Ionicons name="phone-portrait-outline" size={48} color="#FFF" />
             </LinearGradient>
-            <Text style={styles.logoTitle}>Superintelligence</Text>
+            <Text style={styles.logoTitle}>Superintelligence Mobile</Text>
             <Text style={styles.logoSubtitle}>Premium Cep Telefonu Mağazası</Text>
           </Animated.View>
 
@@ -123,11 +123,11 @@ export default function LoginScreen({ navigation }) {
             {/* Demo Credentials */}
             <View style={styles.demoBox}>
               <Text style={styles.demoTitle}>Demo Hesaplar</Text>
-              <TouchableOpacity onPress={() => { setEmail('user@mobilcepte.com'); setPassword('user123'); }}>
-                <Text style={styles.demoCredential}>👤 user@mobilcepte.com / user123</Text>
+              <TouchableOpacity onPress={() => { setEmail('user@superintelligence.com'); setPassword('user123'); }}>
+                <Text style={styles.demoCredential}>👤 user@superintelligence.com / user123</Text>
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => { setEmail('admin@mobilcepte.com'); setPassword('admin123'); }}>
-                <Text style={styles.demoCredential}>👑 admin@mobilcepte.com / admin123</Text>
+              <TouchableOpacity onPress={() => { setEmail('admin@superintelligence.com'); setPassword('admin123'); }}>
+                <Text style={styles.demoCredential}>👑 admin@superintelligence.com / admin123</Text>
               </TouchableOpacity>
             </View>
           </Animated.View>
@@ -155,7 +155,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center', alignItems: 'center',
     marginBottom: 16,
   },
-  logoTitle: { fontSize: 32, fontWeight: '800', color: '#FFF', letterSpacing: 1 },
+  logoTitle: { fontSize: 26, fontWeight: '800', color: '#FFF', letterSpacing: 1 },
   logoSubtitle: { fontSize: 14, color: 'rgba(255,255,255,0.6)', marginTop: 4 },
   formCard: {
     backgroundColor: 'rgba(255,255,255,0.07)',

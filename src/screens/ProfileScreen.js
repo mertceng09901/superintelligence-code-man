@@ -16,7 +16,11 @@ export default function ProfileScreen({ navigation }) {
   };
 
   const initial = user?.firstName ? user.firstName.charAt(0).toUpperCase() : 'U';
-  const roleBadge = { ADMIN: { label: 'Yönetici', color: COLORS.error, icon: 'shield-checkmark' }, SELLER: { label: 'Satıcı', color: COLORS.warning, icon: 'storefront' }, USER: { label: 'Müşteri', color: COLORS.secondary, icon: 'person' } };
+  const roleBadge = {
+    ADMIN: { label: 'Yönetici', color: COLORS.error, icon: 'shield-checkmark' },
+    SELLER: { label: 'Satıcı', color: COLORS.warning, icon: 'storefront' },
+    USER: { label: 'Müşteri', color: COLORS.secondary, icon: 'person' }
+  };
   const role = roleBadge[user?.role] || roleBadge.USER;
 
   const MenuItem = ({ icon, label, onPress, color }) => (
@@ -45,10 +49,16 @@ export default function ProfileScreen({ navigation }) {
       </LinearGradient>
 
       <View style={styles.menuSection}>
+        {/* Admin Menüleri */}
+        {isAdmin && <MenuItem icon="stats-chart-outline" label="Yönetim Paneli" onPress={() => navigation.navigate('AdminDashboard')} color={COLORS.error} />}
+        {isAdmin && <MenuItem icon="list-outline" label="Ürün Yönetimi" onPress={() => navigation.navigate('AdminProducts')} color={COLORS.warning} />}
+
+        {/* Müşteri Menüleri */}
         {!isAdmin && <MenuItem icon="cube-outline" label="Siparişlerim" onPress={() => navigation.navigate('Siparişlerim')} color={COLORS.info} />}
         {!isAdmin && <MenuItem icon="cart-outline" label="Sepetim" onPress={() => navigation.navigate('Sepet')} color={COLORS.secondary} />}
+
         <MenuItem icon="person-outline" label="Hesap Bilgileri" onPress={() => Alert.alert('Bilgi', `Ad: ${user?.firstName} ${user?.lastName}\nE-posta: ${user?.email}\nTelefon: ${user?.phone || 'Belirtilmemiş'}\nRol: ${user?.role}`)} color={COLORS.primary} />
-        <MenuItem icon="information-circle-outline" label="Uygulama Hakkında" onPress={() => Alert.alert('Superintelligence v1.0', 'MERN Stack + Redis + RabbitMQ + Docker\n\nGeliştirici: Mert Acar\nSuperintelligence Team')} color={COLORS.warning} />
+        <MenuItem icon="information-circle-outline" label="Uygulama Hakkında" onPress={() => Alert.alert('Superintelligence Mobile v1.0', 'MERN Stack + Redis + RabbitMQ + Docker\n\nGeliştirici: Superintelligence Team')} color={COLORS.warning} />
 
         <TouchableOpacity style={styles.logoutBtn} onPress={handleLogout} activeOpacity={0.8}>
           <LinearGradient colors={COLORS.gradientDanger} style={styles.logoutGradient} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}>
