@@ -85,7 +85,7 @@ export default function RegisterScreen({ navigation }) {
                 <Ionicons name="person-add-outline" size={36} color="#FFF" />
               </LinearGradient>
               <Text style={styles.title}>Hesap Oluştur</Text>
-              <Text style={styles.subtitle}>MobilCepte'ye katılın</Text>
+              <Text style={styles.subtitle}>Superintelligence'a katılın</Text>
             </Animated.View>
 
             {/* Form */}

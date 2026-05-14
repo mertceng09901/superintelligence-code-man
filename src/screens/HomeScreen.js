@@ -136,7 +136,7 @@ export default function HomeScreen({ navigation }) {
       <LinearGradient colors={COLORS.gradient} style={styles.header}>
         <View style={styles.headerTop}>
           <View>
-            <Text style={styles.headerTitle}>MobilCepte</Text>
+            <Text style={styles.headerTitle}>Superintelligence</Text>
             <Text style={styles.headerSub}>{products.length} ürün listeleniyor</Text>
           </View>
           {fromCache && (

@@ -64,7 +64,7 @@ export default function LoginScreen({ navigation }) {
             <LinearGradient colors={COLORS.gradient} style={styles.logoCircle}>
               <Ionicons name="phone-portrait-outline" size={48} color="#FFF" />
             </LinearGradient>
-            <Text style={styles.logoTitle}>MobilCepte</Text>
+            <Text style={styles.logoTitle}>Superintelligence</Text>
             <Text style={styles.logoSubtitle}>Premium Cep Telefonu Mağazası</Text>
           </Animated.View>
 
