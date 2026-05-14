@@ -15,6 +15,27 @@ export default function CheckoutScreen({ navigation }) {
   const [address, setAddress] = useState('');
   const [paymentMethod, setPaymentMethod] = useState('CREDIT_CARD');
 
+  // Kredi Kartı State'leri
+  const [cardName, setCardName] = useState('');
+  const [cardNumber, setCardNumber] = useState('');
+  const [expiry, setExpiry] = useState('');
+  const [cvv, setCvv] = useState('');
+
+  const handleCardNumberChange = (text) => {
+    const cleaned = text.replace(/\D/g, '');
+    const formatted = cleaned.match(/.{1,4}/g)?.join(' ') || cleaned;
+    setCardNumber(formatted.substring(0, 19));
+  };
+
+  const handleExpiryChange = (text) => {
+    const cleaned = text.replace(/\D/g, '');
+    if (cleaned.length >= 2) {
+      setExpiry(`${cleaned.substring(0, 2)}/${cleaned.substring(2, 4)}`);
+    } else {
+      setExpiry(cleaned);
+    }
+  };
+
   useEffect(() => { fetchSummary(); }, []);
 
   const fetchSummary = async () => {
@@ -26,7 +47,19 @@ export default function CheckoutScreen({ navigation }) {
   };
 
   const handlePlaceOrder = async () => {
-    if (!address.trim()) { Alert.alert('Uyarı', 'Adres girin.'); return; }
+    if (!address.trim()) { Alert.alert('Uyarı', 'Lütfen teslimat adresini girin.'); return; }
+    
+    if (paymentMethod === 'CREDIT_CARD') {
+      if (!cardName.trim() || !cardNumber.trim() || !expiry.trim() || !cvv.trim()) {
+        Alert.alert('Uyarı', 'Lütfen kredi kartı bilgilerini eksiksiz girin.');
+        return;
+      }
+      if (cardNumber.replace(/\s/g, '').length !== 16) {
+        Alert.alert('Uyarı', 'Lütfen 16 haneli geçerli bir kart numarası girin.');
+        return;
+      }
+    }
+
     setPlacing(true);
     try {
       const res = await api.post('/orders', { shippingAddress: address, paymentMethod });
@@ -78,11 +111,25 @@ export default function CheckoutScreen({ navigation }) {
         <View style={[s.card, SHADOWS.small]}>
           <View style={s.cardHead}><Ionicons name="wallet-outline" size={20} color={COLORS.warning} /><Text style={s.cardTitle}>Ödeme</Text></View>
           {[{ id: 'CREDIT_CARD', lbl: 'Kredi Kartı', ic: 'card-outline' }, { id: 'CASH', lbl: 'Kapıda Ödeme', ic: 'cash-outline' }].map(o => (
-            <TouchableOpacity key={o.id} style={[s.payOpt, paymentMethod === o.id && s.payOptActive]} onPress={() => setPaymentMethod(o.id)}>
-              <Ionicons name={o.ic} size={22} color={paymentMethod === o.id ? COLORS.primary : COLORS.textMuted} />
-              <Text style={[s.payLbl, paymentMethod === o.id && { color: COLORS.text, fontWeight: '600' }]}>{o.lbl}</Text>
-              <View style={[s.radio, paymentMethod === o.id && s.radioA]}>{paymentMethod === o.id && <View style={s.radioDot} />}</View>
-            </TouchableOpacity>
+            <View key={o.id}>
+              <TouchableOpacity style={[s.payOpt, paymentMethod === o.id && s.payOptActive]} onPress={() => setPaymentMethod(o.id)}>
+                <Ionicons name={o.ic} size={22} color={paymentMethod === o.id ? COLORS.primary : COLORS.textMuted} />
+                <Text style={[s.payLbl, paymentMethod === o.id && { color: COLORS.text, fontWeight: '600' }]}>{o.lbl}</Text>
+                <View style={[s.radio, paymentMethod === o.id && s.radioA]}>{paymentMethod === o.id && <View style={s.radioDot} />}</View>
+              </TouchableOpacity>
+              
+              {/* Kredi Kartı Formu */}
+              {o.id === 'CREDIT_CARD' && paymentMethod === 'CREDIT_CARD' && (
+                <View style={s.cardForm}>
+                  <TextInput style={s.cardInput} placeholder="Kart Üzerindeki İsim" placeholderTextColor={COLORS.textMuted} value={cardName} onChangeText={setCardName} autoCapitalize="words" />
+                  <TextInput style={s.cardInput} placeholder="Kart Numarası" placeholderTextColor={COLORS.textMuted} value={cardNumber} onChangeText={handleCardNumberChange} keyboardType="numeric" maxLength={19} />
+                  <View style={s.cardRow}>
+                    <TextInput style={[s.cardInput, { flex: 1, marginRight: 8 }]} placeholder="AA/YY" placeholderTextColor={COLORS.textMuted} value={expiry} onChangeText={handleExpiryChange} keyboardType="numeric" maxLength={5} />
+                    <TextInput style={[s.cardInput, { flex: 1, marginLeft: 8 }]} placeholder="CVV" placeholderTextColor={COLORS.textMuted} value={cvv} onChangeText={setCvv} keyboardType="numeric" maxLength={3} secureTextEntry />
+                  </View>
+                </View>
+              )}
+            </View>
           ))}
         </View>
 
@@ -128,6 +175,9 @@ const s = StyleSheet.create({
   radio: { width: 20, height: 20, borderRadius: 10, borderWidth: 2, borderColor: COLORS.border, justifyContent: 'center', alignItems: 'center' },
   radioA: { borderColor: COLORS.primary },
   radioDot: { width: 10, height: 10, borderRadius: 5, backgroundColor: COLORS.primary },
+  cardForm: { backgroundColor: 'rgba(108,99,255,0.03)', padding: 12, borderRadius: SIZES.radiusSm, borderWidth: 1, borderColor: 'rgba(108,99,255,0.1)', marginBottom: 8, marginTop: -4 },
+  cardInput: { backgroundColor: '#FFF', borderRadius: SIZES.radiusSm, padding: 12, fontSize: 14, color: COLORS.text, borderWidth: 1, borderColor: COLORS.border, marginBottom: 10 },
+  cardRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 2 },
   infoBox: { flexDirection: 'row', alignItems: 'flex-start', gap: 8, backgroundColor: 'rgba(59,130,246,0.08)', borderRadius: SIZES.radiusSm, padding: 14, marginBottom: 16 },
   infoTxt: { flex: 1, fontSize: 12, color: COLORS.info, lineHeight: 18 },
   bottom: { paddingHorizontal: 16, paddingVertical: 16, backgroundColor: '#FFF', borderTopLeftRadius: 24, borderTopRightRadius: 24 },
