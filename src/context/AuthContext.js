@@ -21,8 +21,11 @@ export const AuthProvider = ({ children }) => {
       const storedToken = await AsyncStorage.getItem('userToken');
       const storedUser = await AsyncStorage.getItem('userData');
       if (storedToken && storedUser) {
+        const parsed = JSON.parse(storedUser);
+        // Role'ü her zaman büyük harfe normalize et
+        if (parsed.role) parsed.role = parsed.role.toUpperCase();
         setToken(storedToken);
-        setUser(JSON.parse(storedUser));
+        setUser(parsed);
       }
     } catch (e) {
       console.log('Oturum yükleme hatası:', e);
@@ -34,6 +37,8 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     const response = await api.post('/auth/login', { email, password });
     const { token: newToken, ...userData } = response.data;
+    // Role'ü büyük harfe normalize et (ADMIN/USER/SELLER)
+    if (userData.role) userData.role = userData.role.toUpperCase();
     await AsyncStorage.setItem('userToken', newToken);
     await AsyncStorage.setItem('userData', JSON.stringify(userData));
     setToken(newToken);
@@ -52,10 +57,19 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
   };
 
+  const updateProfile = async (updates) => {
+    const response = await api.put('/users/profile', updates);
+    const updatedUser = { ...user, ...response.data };
+    if (updatedUser.role) updatedUser.role = updatedUser.role.toUpperCase();
+    await AsyncStorage.setItem('userData', JSON.stringify(updatedUser));
+    setUser(updatedUser);
+    return updatedUser;
+  };
+
   const isAdmin = user?.role === 'ADMIN' || user?.role === 'SELLER';
 
   return (
-    <AuthContext.Provider value={{ user, token, loading, isAdmin, login, register, logout }}>
+    <AuthContext.Provider value={{ user, token, loading, isAdmin, login, register, logout, updateProfile }}>
       {children}
     </AuthContext.Provider>
   );

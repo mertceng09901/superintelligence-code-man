@@ -123,11 +123,18 @@ export default function LoginScreen({ navigation }) {
             {/* Demo Credentials */}
             <View style={styles.demoBox}>
               <Text style={styles.demoTitle}>Demo Hesaplar</Text>
+              <TouchableOpacity onPress={() => { setEmail('admin@superintelligence.com'); setPassword('admin123'); }}>
+                <Text style={styles.demoCredential}>👑 admin@superintelligence.com / admin123</Text>
+              </TouchableOpacity>
               <TouchableOpacity onPress={() => { setEmail('user@superintelligence.com'); setPassword('user123'); }}>
                 <Text style={styles.demoCredential}>👤 user@superintelligence.com / user123</Text>
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => { setEmail('admin@superintelligence.com'); setPassword('admin123'); }}>
-                <Text style={styles.demoCredential}>👑 admin@superintelligence.com / admin123</Text>
+              <View style={styles.demoDivider} />
+              <TouchableOpacity onPress={() => { setEmail('admin@mobilcepte.com'); setPassword('admin123'); }}>
+                <Text style={styles.demoCredential}>👑 admin@mobilcepte.com / admin123</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => { setEmail('user@mobilcepte.com'); setPassword('user123'); }}>
+                <Text style={styles.demoCredential}>👤 user@mobilcepte.com / user123</Text>
               </TouchableOpacity>
             </View>
           </Animated.View>
@@ -197,7 +204,8 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(108,99,255,0.2)',
   },
   demoTitle: { fontSize: 12, color: 'rgba(255,255,255,0.5)', marginBottom: 8, textAlign: 'center' },
-  demoCredential: { fontSize: 12, color: 'rgba(255,255,255,0.7)', textAlign: 'center', marginBottom: 4 },
+  demoCredential: { fontSize: 12, color: 'rgba(255,255,255,0.7)', textAlign: 'center', marginBottom: 6, paddingVertical: 2 },
+  demoDivider: { height: 1, backgroundColor: 'rgba(255,255,255,0.1)', marginVertical: 6 },
   registerRow: { flexDirection: 'row', justifyContent: 'center', marginTop: 24 },
   registerText: { color: 'rgba(255,255,255,0.5)', fontSize: 14 },
   registerLink: { color: COLORS.primary, fontSize: 14, fontWeight: '700' },

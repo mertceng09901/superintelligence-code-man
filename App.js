@@ -20,6 +20,7 @@ import HomeScreen from './src/screens/HomeScreen';
 import OrdersScreen from './src/screens/OrdersScreen';
 import ProductDetailScreen from './src/screens/ProductDetailScreen';
 import ProfileScreen from './src/screens/ProfileScreen';
+import ProfileEditScreen from './src/screens/ProfileEditScreen';
 
 // Admin Screens
 import AddEditProductScreen from './src/screens/AddEditProductScreen';
@@ -139,12 +140,14 @@ function AppNavigator() {
           <>
             <Stack.Screen name="AdminHome" component={AdminTabs} />
             <Stack.Screen name="AddEditProduct" component={AddEditProductScreen} />
+            <Stack.Screen name="ProfileEdit" component={ProfileEditScreen} />
           </>
         ) : (
           <>
             <Stack.Screen name="UserHome" component={UserTabs} />
             <Stack.Screen name="ProductDetail" component={ProductDetailScreen} />
             <Stack.Screen name="Checkout" component={CheckoutScreen} />
+            <Stack.Screen name="ProfileEdit" component={ProfileEditScreen} />
           </>
         )}
       </Stack.Navigator>
