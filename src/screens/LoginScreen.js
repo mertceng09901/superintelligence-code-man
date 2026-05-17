@@ -69,102 +69,108 @@ export default function LoginScreen({ navigation }) {
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
           style={styles.content}
         >
-          {/* Logo */}
-          <Animated.View style={[styles.logoContainer, { transform: [{ scale: logoScale }] }]}>
-            <LinearGradient colors={COLORS.gradient} style={styles.logoCircle}>
-              <Ionicons name="phone-portrait-outline" size={48} color="#FFF" />
-            </LinearGradient>
-            <Text style={styles.logoTitle}>Superintelligence Mobile</Text>
-            <Text style={styles.logoSubtitle}>Premium Cep Telefonu Mağazası</Text>
-          </Animated.View>
-
-          {/* Form Card */}
-          <Animated.View style={[
-            styles.formCard,
-            { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }
-          ]}>
-            <Text style={styles.welcomeText}>Hoş Geldiniz</Text>
-            <Text style={styles.welcomeSub}>Hesabınıza giriş yapın</Text>
-
-            {/* Email Input */}
-            <View style={styles.inputWrapper}>
-              <Ionicons name="mail-outline" size={20} color={COLORS.textMuted} style={styles.inputIcon} />
-              <TextInput
-                style={styles.input}
-                placeholder="E-posta adresiniz"
-                placeholderTextColor={COLORS.textMuted}
-                value={email}
-                onChangeText={setEmail}
-                keyboardType="email-address"
-                autoCapitalize="none"
-              />
-            </View>
-
-            {/* Password Input */}
-            <View style={styles.inputWrapper}>
-              <Ionicons name="lock-closed-outline" size={20} color={COLORS.textMuted} style={styles.inputIcon} />
-              <TextInput
-                style={styles.input}
-                placeholder="Şifreniz"
-                placeholderTextColor={COLORS.textMuted}
-                value={password}
-                onChangeText={setPassword}
-                secureTextEntry={!showPassword}
-              />
-              <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeBtn}>
-                <Ionicons name={showPassword ? 'eye-off-outline' : 'eye-outline'} size={20} color={COLORS.textMuted} />
-              </TouchableOpacity>
-            </View>
-
-            {/* Login Button */}
-            <TouchableOpacity onPress={handleLogin} disabled={loading} activeOpacity={0.8}>
-              <LinearGradient colors={COLORS.gradient} style={styles.loginBtn} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}>
-                {loading ? (
-                  <ActivityIndicator color="#FFF" size="small" />
-                ) : (
-                  <>
-                    <Text style={styles.loginBtnText}>Giriş Yap</Text>
-                    <Ionicons name="arrow-forward" size={20} color="#FFF" />
-                  </>
-                )}
+          <ScrollView 
+            contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }}
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
+          >
+            {/* Logo */}
+            <Animated.View style={[styles.logoContainer, { transform: [{ scale: logoScale }] }]}>
+              <LinearGradient colors={COLORS.gradient} style={styles.logoCircle}>
+                <Ionicons name="phone-portrait-outline" size={48} color="#FFF" />
               </LinearGradient>
-            </TouchableOpacity>
+              <Text style={styles.logoTitle}>Superintelligence Mobile</Text>
+              <Text style={styles.logoSubtitle}>Premium Cep Telefonu Mağazası</Text>
+            </Animated.View>
 
-            {/* Demo Credentials */}
-            <View style={styles.demoBox}>
-              <Text style={styles.demoTitle}>Hızlı Giriş — Demo Hesaplar</Text>
+            {/* Form Card */}
+            <Animated.View style={[
+              styles.formCard,
+              { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }
+            ]}>
+              <Text style={styles.welcomeText}>Hoş Geldiniz</Text>
+              <Text style={styles.welcomeSub}>Hesabınıza giriş yapın</Text>
 
-              <TouchableOpacity style={styles.demoBtn} onPress={() => fillDemo('admin')} activeOpacity={0.7}>
-                <View style={styles.demoIconBg}>
-                  <Ionicons name="shield-checkmark" size={18} color={COLORS.error} />
-                </View>
-                <View style={styles.demoInfo}>
-                  <Text style={styles.demoBtnTitle}>👑 Admin Hesabı</Text>
-                  <Text style={styles.demoBtnSub}>admin@superintelligence.com</Text>
-                </View>
-                <Ionicons name="chevron-forward" size={16} color="rgba(255,255,255,0.3)" />
+              {/* Email Input */}
+              <View style={styles.inputWrapper}>
+                <Ionicons name="mail-outline" size={20} color={COLORS.textMuted} style={styles.inputIcon} />
+                <TextInput
+                  style={styles.input}
+                  placeholder="E-posta adresiniz"
+                  placeholderTextColor={COLORS.textMuted}
+                  value={email}
+                  onChangeText={setEmail}
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                />
+              </View>
+
+              {/* Password Input */}
+              <View style={styles.inputWrapper}>
+                <Ionicons name="lock-closed-outline" size={20} color={COLORS.textMuted} style={styles.inputIcon} />
+                <TextInput
+                  style={styles.input}
+                  placeholder="Şifreniz"
+                  placeholderTextColor={COLORS.textMuted}
+                  value={password}
+                  onChangeText={setPassword}
+                  secureTextEntry={!showPassword}
+                />
+                <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeBtn}>
+                  <Ionicons name={showPassword ? 'eye-off-outline' : 'eye-outline'} size={20} color={COLORS.textMuted} />
+                </TouchableOpacity>
+              </View>
+
+              {/* Login Button */}
+              <TouchableOpacity onPress={handleLogin} disabled={loading} activeOpacity={0.8}>
+                <LinearGradient colors={COLORS.gradient} style={styles.loginBtn} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}>
+                  {loading ? (
+                    <ActivityIndicator color="#FFF" size="small" />
+                  ) : (
+                    <>
+                      <Text style={styles.loginBtnText}>Giriş Yap</Text>
+                      <Ionicons name="arrow-forward" size={20} color="#FFF" />
+                    </>
+                  )}
+                </LinearGradient>
               </TouchableOpacity>
 
-              <TouchableOpacity style={styles.demoBtn} onPress={() => fillDemo('user')} activeOpacity={0.7}>
-                <View style={[styles.demoIconBg, { backgroundColor: 'rgba(0,200,151,0.15)' }]}>
-                  <Ionicons name="person" size={18} color={COLORS.secondary} />
-                </View>
-                <View style={styles.demoInfo}>
-                  <Text style={styles.demoBtnTitle}>👤 Kullanıcı Hesabı</Text>
-                  <Text style={styles.demoBtnSub}>user@superintelligence.com</Text>
-                </View>
-                <Ionicons name="chevron-forward" size={16} color="rgba(255,255,255,0.3)" />
-              </TouchableOpacity>
-            </View>
-          </Animated.View>
+              {/* Demo Credentials */}
+              <View style={styles.demoBox}>
+                <Text style={styles.demoTitle}>Hızlı Giriş — Demo Hesaplar</Text>
 
-          {/* Register Link */}
-          <Animated.View style={[styles.registerRow, { opacity: fadeAnim }]}>
-            <Text style={styles.registerText}>Hesabınız yok mu? </Text>
-            <TouchableOpacity onPress={() => navigation.navigate('Register')}>
-              <Text style={styles.registerLink}>Kayıt Olun</Text>
-            </TouchableOpacity>
-          </Animated.View>
+                <TouchableOpacity style={styles.demoBtn} onPress={() => fillDemo('admin')} activeOpacity={0.7}>
+                  <View style={styles.demoIconBg}>
+                    <Ionicons name="shield-checkmark" size={18} color={COLORS.error} />
+                  </View>
+                  <View style={styles.demoInfo}>
+                    <Text style={styles.demoBtnTitle}>👑 Admin Hesabı</Text>
+                    <Text style={styles.demoBtnSub}>admin@superintelligence.com</Text>
+                  </View>
+                  <Ionicons name="chevron-forward" size={16} color="rgba(255,255,255,0.3)" />
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles.demoBtn} onPress={() => fillDemo('user')} activeOpacity={0.7}>
+                  <View style={[styles.demoIconBg, { backgroundColor: 'rgba(0,200,151,0.15)' }]}>
+                    <Ionicons name="person" size={18} color={COLORS.secondary} />
+                  </View>
+                  <View style={styles.demoInfo}>
+                    <Text style={styles.demoBtnTitle}>👤 Kullanıcı Hesabı</Text>
+                    <Text style={styles.demoBtnSub}>user@superintelligence.com</Text>
+                  </View>
+                  <Ionicons name="chevron-forward" size={16} color="rgba(255,255,255,0.3)" />
+                </TouchableOpacity>
+              </View>
+            </Animated.View>
+
+            {/* Register Link */}
+            <Animated.View style={[styles.registerRow, { opacity: fadeAnim }]}>
+              <Text style={styles.registerText}>Hesabınız yok mu? </Text>
+              <TouchableOpacity onPress={() => navigation.navigate('Register')}>
+                <Text style={styles.registerLink}>Kayıt Olun</Text>
+              </TouchableOpacity>
+            </Animated.View>
+          </ScrollView>
         </KeyboardAvoidingView>
       </LinearGradient>
     </View>
