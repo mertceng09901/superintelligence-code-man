@@ -51,6 +51,16 @@ export default function LoginScreen({ navigation }) {
     }
   };
 
+  const fillDemo = (type) => {
+    if (type === 'admin') {
+      setEmail('admin@superintelligence.com');
+      setPassword('admin123');
+    } else {
+      setEmail('user@superintelligence.com');
+      setPassword('user123');
+    }
+  };
+
   return (
     <View style={styles.container}>
       <StatusBar barStyle="light-content" />
@@ -122,19 +132,28 @@ export default function LoginScreen({ navigation }) {
 
             {/* Demo Credentials */}
             <View style={styles.demoBox}>
-              <Text style={styles.demoTitle}>Demo Hesaplar</Text>
-              <TouchableOpacity onPress={() => { setEmail('admin@superintelligence.com'); setPassword('admin123'); }}>
-                <Text style={styles.demoCredential}>👑 admin@superintelligence.com / admin123</Text>
+              <Text style={styles.demoTitle}>Hızlı Giriş — Demo Hesaplar</Text>
+
+              <TouchableOpacity style={styles.demoBtn} onPress={() => fillDemo('admin')} activeOpacity={0.7}>
+                <View style={styles.demoIconBg}>
+                  <Ionicons name="shield-checkmark" size={18} color={COLORS.error} />
+                </View>
+                <View style={styles.demoInfo}>
+                  <Text style={styles.demoBtnTitle}>👑 Admin Hesabı</Text>
+                  <Text style={styles.demoBtnSub}>admin@superintelligence.com</Text>
+                </View>
+                <Ionicons name="chevron-forward" size={16} color="rgba(255,255,255,0.3)" />
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => { setEmail('user@superintelligence.com'); setPassword('user123'); }}>
-                <Text style={styles.demoCredential}>👤 user@superintelligence.com / user123</Text>
-              </TouchableOpacity>
-              <View style={styles.demoDivider} />
-              <TouchableOpacity onPress={() => { setEmail('admin@mobilcepte.com'); setPassword('admin123'); }}>
-                <Text style={styles.demoCredential}>👑 admin@mobilcepte.com / admin123</Text>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => { setEmail('user@mobilcepte.com'); setPassword('user123'); }}>
-                <Text style={styles.demoCredential}>👤 user@mobilcepte.com / user123</Text>
+
+              <TouchableOpacity style={styles.demoBtn} onPress={() => fillDemo('user')} activeOpacity={0.7}>
+                <View style={[styles.demoIconBg, { backgroundColor: 'rgba(0,200,151,0.15)' }]}>
+                  <Ionicons name="person" size={18} color={COLORS.secondary} />
+                </View>
+                <View style={styles.demoInfo}>
+                  <Text style={styles.demoBtnTitle}>👤 Kullanıcı Hesabı</Text>
+                  <Text style={styles.demoBtnSub}>user@superintelligence.com</Text>
+                </View>
+                <Ionicons name="chevron-forward" size={16} color="rgba(255,255,255,0.3)" />
               </TouchableOpacity>
             </View>
           </Animated.View>
@@ -198,14 +217,28 @@ const styles = StyleSheet.create({
   demoBox: {
     marginTop: 20,
     padding: 14,
-    backgroundColor: 'rgba(108,99,255,0.15)',
+    backgroundColor: 'rgba(108,99,255,0.12)',
     borderRadius: SIZES.radiusSm,
     borderWidth: 1,
     borderColor: 'rgba(108,99,255,0.2)',
   },
-  demoTitle: { fontSize: 12, color: 'rgba(255,255,255,0.5)', marginBottom: 8, textAlign: 'center' },
-  demoCredential: { fontSize: 12, color: 'rgba(255,255,255,0.7)', textAlign: 'center', marginBottom: 6, paddingVertical: 2 },
-  demoDivider: { height: 1, backgroundColor: 'rgba(255,255,255,0.1)', marginVertical: 6 },
+  demoTitle: { fontSize: 11, color: 'rgba(255,255,255,0.45)', marginBottom: 12, textAlign: 'center', textTransform: 'uppercase', letterSpacing: 1 },
+  demoBtn: {
+    flexDirection: 'row', alignItems: 'center',
+    backgroundColor: 'rgba(255,255,255,0.05)',
+    borderRadius: SIZES.radiusSm,
+    padding: 12, marginBottom: 8,
+    borderWidth: 1, borderColor: 'rgba(255,255,255,0.08)',
+    gap: 10,
+  },
+  demoIconBg: {
+    width: 36, height: 36, borderRadius: 10,
+    backgroundColor: 'rgba(239,68,68,0.15)',
+    justifyContent: 'center', alignItems: 'center',
+  },
+  demoInfo: { flex: 1 },
+  demoBtnTitle: { fontSize: 13, fontWeight: '700', color: '#FFF' },
+  demoBtnSub: { fontSize: 11, color: 'rgba(255,255,255,0.5)', marginTop: 2 },
   registerRow: { flexDirection: 'row', justifyContent: 'center', marginTop: 24 },
   registerText: { color: 'rgba(255,255,255,0.5)', fontSize: 14 },
   registerLink: { color: COLORS.primary, fontSize: 14, fontWeight: '700' },

@@ -42,7 +42,12 @@ export default function ProductDetailScreen({ route, navigation }) {
       });
       Alert.alert('✅ Başarılı', `${product.model} sepete eklendi!`, [
         { text: 'Alışverişe Devam', style: 'cancel' },
-        { text: 'Sepete Git', onPress: () => navigation.navigate('Sepet') },
+        {
+          text: 'Sepete Git',
+          onPress: () => {
+            navigation.navigate('UserHome', { screen: 'Sepet' });
+          }
+        },
       ]);
     } catch (error) {
       const msg = error.response?.data?.message || 'Sepete eklenemedi.';
