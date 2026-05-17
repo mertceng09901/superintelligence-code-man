@@ -1,5 +1,4 @@
 import 'react-native-gesture-handler';
-import { registerRootComponent } from 'expo';
 import { Ionicons } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
@@ -171,8 +170,6 @@ function App() {
     </SafeAreaProvider>
   );
 }
-
-registerRootComponent(App);
 
 export default App;
 

@@ -1,6 +1,6 @@
 {
   "name": "superintelligence-mobile",
-  "main": "./App.js",
+  "main": "expo/AppEntry.js",
   "version": "1.0.0",
   "scripts": {
     "start": "node server.js",
