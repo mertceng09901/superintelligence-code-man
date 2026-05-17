@@ -1,3 +1,5 @@
+import 'react-native-gesture-handler';
+import { registerRootComponent } from 'expo';
 import { Ionicons } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
@@ -5,7 +7,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
-import 'react-native-gesture-handler';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { COLORS } from './src/config/theme';
 import { AuthProvider, useAuth } from './src/context/AuthContext';
 
@@ -160,9 +162,6 @@ function AppNavigator() {
 // ============================================
 // Root App Component
 // ============================================
-import { registerRootComponent } from 'expo';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
-
 function App() {
   return (
     <SafeAreaProvider>
