@@ -121,6 +121,14 @@ export default function LoginScreen({ navigation }) {
                 </TouchableOpacity>
               </View>
 
+              {/* Forgot Password Link */}
+              <TouchableOpacity 
+                style={styles.forgotPasswordContainer} 
+                onPress={() => navigation.navigate('ForgotPassword')}
+              >
+                <Text style={styles.forgotPasswordText}>Şifremi Unuttum</Text>
+              </TouchableOpacity>
+
               {/* Login Button */}
               <TouchableOpacity onPress={handleLogin} disabled={loading} activeOpacity={0.8}>
                 <LinearGradient colors={COLORS.gradient} style={styles.loginBtn} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}>
@@ -210,6 +218,16 @@ const styles = StyleSheet.create({
   inputIcon: { paddingLeft: 14 },
   input: { flex: 1, color: '#FFF', fontSize: 15, paddingVertical: 14, paddingHorizontal: 10 },
   eyeBtn: { padding: 14 },
+  forgotPasswordContainer: {
+    alignSelf: 'flex-end',
+    marginBottom: 16,
+    marginTop: -4,
+  },
+  forgotPasswordText: {
+    color: COLORS.primary,
+    fontSize: 13,
+    fontWeight: '600',
+  },
   loginBtn: {
     flexDirection: 'row',
     alignItems: 'center',

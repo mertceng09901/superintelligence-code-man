@@ -66,10 +66,15 @@ export const AuthProvider = ({ children }) => {
     return updatedUser;
   };
 
+  const forgotPassword = async (email) => {
+    const response = await api.post('/auth/forgot-password', { email });
+    return response.data;
+  };
+
   const isAdmin = user?.role === 'ADMIN' || user?.role === 'SELLER';
 
   return (
-    <AuthContext.Provider value={{ user, token, loading, isAdmin, login, register, logout, updateProfile }}>
+    <AuthContext.Provider value={{ user, token, loading, isAdmin, login, register, logout, updateProfile, forgotPassword }}>
       {children}
     </AuthContext.Provider>
   );

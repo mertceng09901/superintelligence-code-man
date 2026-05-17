@@ -106,3 +106,33 @@ exports.login = async (req, res) => {
         res.status(500).json({ message: 'Sunucu hatası', error: error.message });
     }
 };
+
+// -----------------------------------------
+// @işlem   Şifremi Unuttum (Forgot Password)
+// @istek   POST /api/auth/forgot-password
+// -----------------------------------------
+exports.forgotPassword = async (req, res) => {
+    try {
+        const { email } = req.body;
+        const user = await User.findOne({ email: email.toLowerCase() });
+
+        if (!user) {
+            return res.status(404).json({ message: 'Bu e-posta adresine ait kullanıcı bulunamadı.' });
+        }
+
+        // Rastgele 6 haneli şifre üret
+        const newTempPassword = Math.floor(100000 + Math.random() * 900000).toString();
+
+        // Şifreyi hash'le ve kaydet
+        const salt = await bcrypt.genSalt(10);
+        user.password = await bcrypt.hash(newTempPassword, salt);
+        await user.save();
+
+        res.json({
+            message: 'Şifreniz başarıyla sıfırlandı.',
+            tempPassword: newTempPassword // Demo ortamı için şifreyi geri dönüyoruz
+        });
+    } catch (error) {
+        res.status(500).json({ message: 'Sunucu hatası', error: error.message });
+    }
+};
