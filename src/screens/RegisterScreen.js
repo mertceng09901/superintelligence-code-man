@@ -9,6 +9,24 @@ import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../context/AuthContext';
 import { COLORS, SIZES } from '../config/theme';
 
+// ✅ Bileşen dışında tanımlandı — her render'da yeniden oluşmaz, klavye kapanmaz
+const InputField = ({ icon, placeholder, value, onChangeText, secureTextEntry, keyboardType, autoCapitalize, rightElement }) => (
+  <View style={styles.inputWrapper}>
+    {icon && <Ionicons name={icon} size={20} color={COLORS.textMuted} style={styles.inputIcon} />}
+    <TextInput
+      style={styles.input}
+      placeholder={placeholder}
+      placeholderTextColor={COLORS.textMuted}
+      value={value}
+      onChangeText={onChangeText}
+      secureTextEntry={secureTextEntry}
+      keyboardType={keyboardType || 'default'}
+      autoCapitalize={autoCapitalize || 'none'}
+    />
+    {rightElement}
+  </View>
+);
+
 export default function RegisterScreen({ navigation }) {
   const { register } = useAuth();
   const [firstName, setFirstName] = useState('');
@@ -53,29 +71,20 @@ export default function RegisterScreen({ navigation }) {
     }
   };
 
-  const InputField = ({ icon, placeholder, value, onChangeText, secureTextEntry, keyboardType, autoCapitalize }) => (
-    <View style={styles.inputWrapper}>
-      <Ionicons name={icon} size={20} color={COLORS.textMuted} style={styles.inputIcon} />
-      <TextInput
-        style={styles.input}
-        placeholder={placeholder}
-        placeholderTextColor={COLORS.textMuted}
-        value={value}
-        onChangeText={onChangeText}
-        secureTextEntry={secureTextEntry}
-        keyboardType={keyboardType}
-        autoCapitalize={autoCapitalize || 'none'}
-      />
-    </View>
-  );
-
   return (
     <View style={styles.container}>
       <StatusBar barStyle="light-content" />
       <LinearGradient colors={COLORS.gradientDark} style={styles.gradient}>
-        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
-          <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-            {/* Header */}
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          style={{ flex: 1 }}
+        >
+          <ScrollView
+            contentContainerStyle={styles.scrollContent}
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
+          >
+            {/* Geri Butonu */}
             <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
               <Ionicons name="arrow-back" size={24} color="#FFF" />
             </TouchableOpacity>
@@ -90,26 +99,70 @@ export default function RegisterScreen({ navigation }) {
 
             {/* Form */}
             <Animated.View style={[styles.formCard, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
+
+              {/* Ad - Soyad yan yana */}
               <View style={styles.nameRow}>
                 <View style={[styles.inputWrapper, { flex: 1, marginRight: 8 }]}>
                   <Ionicons name="person-outline" size={20} color={COLORS.textMuted} style={styles.inputIcon} />
-                  <TextInput style={styles.input} placeholder="Ad" placeholderTextColor={COLORS.textMuted}
-                    value={firstName} onChangeText={setFirstName} autoCapitalize="words" />
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Ad"
+                    placeholderTextColor={COLORS.textMuted}
+                    value={firstName}
+                    onChangeText={setFirstName}
+                    autoCapitalize="words"
+                  />
                 </View>
                 <View style={[styles.inputWrapper, { flex: 1 }]}>
-                  <TextInput style={[styles.input, { paddingLeft: 14 }]} placeholder="Soyad" placeholderTextColor={COLORS.textMuted}
-                    value={lastName} onChangeText={setLastName} autoCapitalize="words" />
+                  <TextInput
+                    style={[styles.input, { paddingLeft: 14 }]}
+                    placeholder="Soyad"
+                    placeholderTextColor={COLORS.textMuted}
+                    value={lastName}
+                    onChangeText={setLastName}
+                    autoCapitalize="words"
+                  />
                 </View>
               </View>
 
-              <InputField icon="mail-outline" placeholder="E-posta" value={email} onChangeText={setEmail} keyboardType="email-address" />
-              <InputField icon="call-outline" placeholder="Telefon (opsiyonel)" value={phone} onChangeText={setPhone} keyboardType="phone-pad" />
+              {/* E-posta */}
+              <View style={styles.inputWrapper}>
+                <Ionicons name="mail-outline" size={20} color={COLORS.textMuted} style={styles.inputIcon} />
+                <TextInput
+                  style={styles.input}
+                  placeholder="E-posta"
+                  placeholderTextColor={COLORS.textMuted}
+                  value={email}
+                  onChangeText={setEmail}
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                />
+              </View>
 
+              {/* Telefon */}
+              <View style={styles.inputWrapper}>
+                <Ionicons name="call-outline" size={20} color={COLORS.textMuted} style={styles.inputIcon} />
+                <TextInput
+                  style={styles.input}
+                  placeholder="Telefon (opsiyonel)"
+                  placeholderTextColor={COLORS.textMuted}
+                  value={phone}
+                  onChangeText={setPhone}
+                  keyboardType="phone-pad"
+                />
+              </View>
+
+              {/* Şifre */}
               <View style={styles.inputWrapper}>
                 <Ionicons name="lock-closed-outline" size={20} color={COLORS.textMuted} style={styles.inputIcon} />
-                <TextInput style={styles.input} placeholder="Şifre (min 6 karakter)"
-                  placeholderTextColor={COLORS.textMuted} value={password} onChangeText={setPassword}
-                  secureTextEntry={!showPassword} />
+                <TextInput
+                  style={styles.input}
+                  placeholder="Şifre (min 6 karakter)"
+                  placeholderTextColor={COLORS.textMuted}
+                  value={password}
+                  onChangeText={setPassword}
+                  secureTextEntry={!showPassword}
+                />
                 <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeBtn}>
                   <Ionicons name={showPassword ? 'eye-off-outline' : 'eye-outline'} size={20} color={COLORS.textMuted} />
                 </TouchableOpacity>
@@ -135,6 +188,7 @@ export default function RegisterScreen({ navigation }) {
                 <Text style={styles.loginLink}>Giriş Yapın</Text>
               </TouchableOpacity>
             </View>
+
           </ScrollView>
         </KeyboardAvoidingView>
       </LinearGradient>
@@ -146,7 +200,7 @@ const styles = StyleSheet.create({
   container: { flex: 1 },
   gradient: { flex: 1 },
   scrollContent: { flexGrow: 1, justifyContent: 'center', paddingHorizontal: 24, paddingVertical: 40 },
-  backBtn: { position: 'absolute', top: 0, left: 0, padding: 4 },
+  backBtn: { alignSelf: 'flex-start', padding: 4, marginBottom: 8 },
   headerSection: { alignItems: 'center', marginBottom: 28, marginTop: 20 },
   iconCircle: {
     width: 80, height: 80, borderRadius: 24,

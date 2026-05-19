@@ -9,6 +9,25 @@ import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../context/AuthContext';
 import { COLORS, SHADOWS, SIZES } from '../config/theme';
 
+// ✅ Bileşen dışında tanımlandı — her render'da yeniden oluşmaz, klavye kapanmaz
+const Field = ({ icon, label, value, onChangeText, keyboardType, autoCapitalize }) => (
+  <View style={styles.fieldGroup}>
+    <Text style={styles.fieldLabel}>{label}</Text>
+    <View style={styles.inputWrapper}>
+      <Ionicons name={icon} size={18} color={COLORS.primary} style={styles.fieldIcon} />
+      <TextInput
+        style={styles.input}
+        value={value}
+        onChangeText={onChangeText}
+        keyboardType={keyboardType || 'default'}
+        autoCapitalize={autoCapitalize || 'sentences'}
+        placeholderTextColor={COLORS.textMuted}
+        placeholder={label}
+      />
+    </View>
+  </View>
+);
+
 export default function ProfileEditScreen({ navigation }) {
   const { user, updateProfile } = useAuth();
 
@@ -35,24 +54,6 @@ export default function ProfileEditScreen({ navigation }) {
     }
   };
 
-  const Field = ({ icon, label, value, onChangeText, keyboardType, autoCapitalize }) => (
-    <View style={styles.fieldGroup}>
-      <Text style={styles.fieldLabel}>{label}</Text>
-      <View style={styles.inputWrapper}>
-        <Ionicons name={icon} size={18} color={COLORS.primary} style={styles.fieldIcon} />
-        <TextInput
-          style={styles.input}
-          value={value}
-          onChangeText={onChangeText}
-          keyboardType={keyboardType || 'default'}
-          autoCapitalize={autoCapitalize || 'sentences'}
-          placeholderTextColor={COLORS.textMuted}
-          placeholder={label}
-        />
-      </View>
-    </View>
-  );
-
   return (
     <View style={styles.container}>
       <StatusBar barStyle="light-content" />
@@ -64,9 +65,15 @@ export default function ProfileEditScreen({ navigation }) {
         <View style={{ width: 44 }} />
       </LinearGradient>
 
-      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
-        <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
-
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={{ flex: 1 }}
+      >
+        <ScrollView
+          contentContainerStyle={styles.scroll}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+        >
           {/* Avatar */}
           <View style={styles.avatarSection}>
             <LinearGradient colors={COLORS.gradient} style={styles.avatarCircle}>
@@ -108,7 +115,7 @@ export default function ProfileEditScreen({ navigation }) {
               autoCapitalize="none"
             />
 
-            {/* E-posta göster ama düzenleme yok */}
+            {/* E-posta — düzenlenemez */}
             <View style={styles.fieldGroup}>
               <Text style={styles.fieldLabel}>E-posta</Text>
               <View style={[styles.inputWrapper, styles.inputDisabled]}>
