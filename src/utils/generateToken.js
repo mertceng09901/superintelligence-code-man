@@ -1,10 +1,12 @@
 const jwt = require('jsonwebtoken');
 
-// Kullanıcının benzersiz ID'sini alıp şifreli bir Token üretir
-const generateToken = (id) => {
-    return jwt.sign({ id }, process.env.JWT_SECRET, {
-        expiresIn: '30d', // Token 30 gün boyunca geçerli olacak
-    });
+// Kullanıcının ID ve rolünü token'a ekler
+const generateToken = (id, role) => {
+    return jwt.sign(
+        { id, role: role || 'USER' },
+        process.env.JWT_SECRET,
+        { expiresIn: '30d' }
+    );
 };
 
 module.exports = generateToken;
