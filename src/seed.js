@@ -1,5 +1,5 @@
 // ============================================
-// SEED SCRIPT — Veritabanına Başlangıç Verisi Yükleme
+// SEED SCRIPT – Veritabanına Başlangıç Verisi Yükleme
 // ============================================
 // Kullanım: node src/seed.js
 // Docker'da: docker exec mobil_backend node src/seed.js
@@ -18,7 +18,47 @@ const seedData = async () => {
         console.log('✅ MongoDB bağlantısı kuruldu.');
 
         // =============================================
-        // 1. ADMIN KULLANICI OLUŞTUR
+        // 1. SUPERINTELLİGENCE ADMIN KULLANICI
+        // =============================================
+        const siAdminExists = await User.findOne({ email: 'admin@superintelligence.com' });
+        if (!siAdminExists) {
+            const salt = await bcrypt.genSalt(10);
+            const hashedPassword = await bcrypt.hash('admin123', salt);
+            await User.create({
+                firstName: 'Admin',
+                lastName: 'Superintelligence',
+                email: 'admin@superintelligence.com',
+                password: hashedPassword,
+                phone: '0532 000 0001',
+                role: 'ADMIN'
+            });
+            console.log('👑 Admin kullanıcı oluşturuldu: admin@superintelligence.com / admin123');
+        } else {
+            console.log('ℹ️  admin@superintelligence.com zaten mevcut.');
+        }
+
+        // =============================================
+        // 2. SUPERINTELLİGENCE USER KULLANICI
+        // =============================================
+        const siUserExists = await User.findOne({ email: 'user@superintelligence.com' });
+        if (!siUserExists) {
+            const salt = await bcrypt.genSalt(10);
+            const hashedPassword = await bcrypt.hash('user123', salt);
+            await User.create({
+                firstName: 'Test',
+                lastName: 'Kullanıcı',
+                email: 'user@superintelligence.com',
+                password: hashedPassword,
+                phone: '0532 000 0002',
+                role: 'USER'
+            });
+            console.log('👤 Kullanıcı oluşturuldu: user@superintelligence.com / user123');
+        } else {
+            console.log('ℹ️  user@superintelligence.com zaten mevcut.');
+        }
+
+        // =============================================
+        // 3. MOBİLCEPTE ADMIN (eski - korunuyor)
         // =============================================
         const adminExists = await User.findOne({ email: 'admin@mobilcepte.com' });
         if (!adminExists) {
@@ -34,31 +74,11 @@ const seedData = async () => {
             });
             console.log('👑 Admin kullanıcı oluşturuldu: admin@mobilcepte.com / admin123');
         } else {
-            console.log('ℹ️  Admin kullanıcı zaten mevcut.');
+            console.log('ℹ️  admin@mobilcepte.com zaten mevcut.');
         }
 
         // =============================================
-        // 2. SELLER KULLANICI OLUŞTUR
-        // =============================================
-        const sellerExists = await User.findOne({ email: 'seller@mobilcepte.com' });
-        if (!sellerExists) {
-            const salt = await bcrypt.genSalt(10);
-            const hashedPassword = await bcrypt.hash('seller123', salt);
-            await User.create({
-                firstName: 'Mert',
-                lastName: 'Acar',
-                email: 'seller@mobilcepte.com',
-                password: hashedPassword,
-                phone: '0532 111 1111',
-                role: 'SELLER'
-            });
-            console.log('🏪 Satıcı kullanıcı oluşturuldu: seller@mobilcepte.com / seller123');
-        } else {
-            console.log('ℹ️  Satıcı kullanıcı zaten mevcut.');
-        }
-
-        // =============================================
-        // 3. NORMAL KULLANICI OLUŞTUR
+        // 4. MOBİLCEPTE USER (eski - korunuyor)
         // =============================================
         const userExists = await User.findOne({ email: 'user@mobilcepte.com' });
         if (!userExists) {
@@ -72,13 +92,13 @@ const seedData = async () => {
                 phone: '0532 222 2222',
                 role: 'USER'
             });
-            console.log('👤 Normal kullanıcı oluşturuldu: user@mobilcepte.com / user123');
+            console.log('👤 Kullanıcı oluşturuldu: user@mobilcepte.com / user123');
         } else {
-            console.log('ℹ️  Normal kullanıcı zaten mevcut.');
+            console.log('ℹ️  user@mobilcepte.com zaten mevcut.');
         }
 
         // =============================================
-        // 4. ÖRNEK ÜRÜNLER OLUŞTUR
+        // 5. ÖRNEK ÜRÜNLER
         // =============================================
         const productCount = await Product.countDocuments();
         if (productCount === 0) {
@@ -160,9 +180,8 @@ const seedData = async () => {
         console.log('✅ Seed işlemi tamamlandı!');
         console.log('');
         console.log('📋 Giriş Bilgileri:');
-        console.log('  👑 Admin  : admin@mobilcepte.com / admin123');
-        console.log('  🏪 Satıcı : seller@mobilcepte.com / seller123');
-        console.log('  👤 Kullanıcı: user@mobilcepte.com / user123');
+        console.log('  👑 Admin  : admin@superintelligence.com / admin123');
+        console.log('  👤 Kullanıcı: user@superintelligence.com / user123');
         console.log('═══════════════════════════════════════════');
 
         process.exit(0);
