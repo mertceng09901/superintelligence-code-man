@@ -2,14 +2,12 @@ import React, { useState, useRef, useEffect } from 'react';
 import {
   View, Text, TextInput, TouchableOpacity, StyleSheet,
   Alert, ActivityIndicator, KeyboardAvoidingView, Platform,
-  Animated, StatusBar, Dimensions
+  Animated, StatusBar, ScrollView
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../context/AuthContext';
 import { COLORS, SIZES } from '../config/theme';
-
-const { width, height } = Dimensions.get('window');
 
 export default function LoginScreen({ navigation }) {
   const { login } = useAuth();
@@ -18,7 +16,6 @@ export default function LoginScreen({ navigation }) {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  // Animasyonlar
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(50)).current;
   const logoScale = useRef(new Animated.Value(0.3)).current;
@@ -67,10 +64,10 @@ export default function LoginScreen({ navigation }) {
       <LinearGradient colors={COLORS.gradientDark} style={styles.gradient}>
         <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          style={styles.content}
+          style={{ flex: 1 }}
         >
-          <ScrollView 
-            contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }}
+          <ScrollView
+            contentContainerStyle={styles.scrollContent}
             showsVerticalScrollIndicator={false}
             keyboardShouldPersistTaps="handled"
           >
@@ -121,9 +118,9 @@ export default function LoginScreen({ navigation }) {
                 </TouchableOpacity>
               </View>
 
-              {/* Forgot Password Link */}
-              <TouchableOpacity 
-                style={styles.forgotPasswordContainer} 
+              {/* Forgot Password */}
+              <TouchableOpacity
+                style={styles.forgotPasswordContainer}
                 onPress={() => navigation.navigate('ForgotPassword')}
               >
                 <Text style={styles.forgotPasswordText}>Şifremi Unuttum</Text>
@@ -143,7 +140,7 @@ export default function LoginScreen({ navigation }) {
                 </LinearGradient>
               </TouchableOpacity>
 
-              {/* Demo Credentials */}
+              {/* Demo Hesaplar — sadece superintelligence.com */}
               <View style={styles.demoBox}>
                 <Text style={styles.demoTitle}>Hızlı Giriş — Demo Hesaplar</Text>
 
@@ -171,13 +168,14 @@ export default function LoginScreen({ navigation }) {
               </View>
             </Animated.View>
 
-            {/* Register Link */}
+            {/* Register Link — ScrollView içinde olduğu için her zaman görünür */}
             <Animated.View style={[styles.registerRow, { opacity: fadeAnim }]}>
               <Text style={styles.registerText}>Hesabınız yok mu? </Text>
               <TouchableOpacity onPress={() => navigation.navigate('Register')}>
                 <Text style={styles.registerLink}>Kayıt Olun</Text>
               </TouchableOpacity>
             </Animated.View>
+
           </ScrollView>
         </KeyboardAvoidingView>
       </LinearGradient>
@@ -188,7 +186,12 @@ export default function LoginScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   gradient: { flex: 1 },
-  content: { flex: 1, justifyContent: 'center', paddingHorizontal: 24 },
+  scrollContent: {
+    flexGrow: 1,
+    justifyContent: 'center',
+    paddingHorizontal: 24,
+    paddingVertical: 40,
+  },
   logoContainer: { alignItems: 'center', marginBottom: 32 },
   logoCircle: {
     width: 90, height: 90, borderRadius: 28,
@@ -263,7 +266,12 @@ const styles = StyleSheet.create({
   demoInfo: { flex: 1 },
   demoBtnTitle: { fontSize: 13, fontWeight: '700', color: '#FFF' },
   demoBtnSub: { fontSize: 11, color: 'rgba(255,255,255,0.5)', marginTop: 2 },
-  registerRow: { flexDirection: 'row', justifyContent: 'center', marginTop: 24 },
+  registerRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginTop: 28,
+    paddingBottom: 8,
+  },
   registerText: { color: 'rgba(255,255,255,0.5)', fontSize: 14 },
   registerLink: { color: COLORS.primary, fontSize: 14, fontWeight: '700' },
 });

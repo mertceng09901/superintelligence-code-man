@@ -11,7 +11,6 @@ export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Uygulama açıldığında kayıtlı oturumu yükle
   useEffect(() => {
     loadStoredAuth();
   }, []);
@@ -22,7 +21,6 @@ export const AuthProvider = ({ children }) => {
       const storedUser = await AsyncStorage.getItem('userData');
       if (storedToken && storedUser) {
         const parsed = JSON.parse(storedUser);
-        // Role'ü her zaman büyük harfe normalize et
         if (parsed.role) parsed.role = parsed.role.toUpperCase();
         setToken(storedToken);
         setUser(parsed);
@@ -36,9 +34,19 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     const response = await api.post('/auth/login', { email, password });
-    const { token: newToken, ...userData } = response.data;
-    // Role'ü büyük harfe normalize et (ADMIN/USER/SELLER)
-    if (userData.role) userData.role = userData.role.toUpperCase();
+    const data = response.data;
+
+    // Backend { _id, firstName, lastName, email, role, token } döndürüyor
+    const newToken = data.token;
+    const userData = {
+      _id: data._id,
+      firstName: data.firstName,
+      lastName: data.lastName,
+      email: data.email,
+      role: data.role ? data.role.toUpperCase() : 'USER',
+      phone: data.phone,
+    };
+
     await AsyncStorage.setItem('userToken', newToken);
     await AsyncStorage.setItem('userData', JSON.stringify(userData));
     setToken(newToken);
