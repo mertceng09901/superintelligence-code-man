@@ -7,7 +7,7 @@ const orderItemSchema = new mongoose.Schema({
         required: true
     },
     quantity: { type: Number, required: true },
-    selectedColor: { type: String, required: true },
+    selectedColor: { type: String, required: false, default: 'Varsayılan' },
     priceAtPurchase: { 
         type: Number, 
         required: true // Ürünün sipariş verildiği andaki fiyatını buraya donduruyoruz
