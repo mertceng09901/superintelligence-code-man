@@ -20,31 +20,46 @@ exports.createOrder = async (req, res) => {
     try {
         const { shippingAddress, paymentMethod } = req.body;
 
-        if (!shippingAddress) {
+        if (!shippingAddress || !shippingAddress.trim()) {
             return res.status(400).json({ message: 'Teslimat adresi zorunludur.' });
         }
 
-        const cart = await Cart.findOne({ user: req.user._id || req.user.id })
+        const userId = req.user._id || req.user.id;
+
+        const cart = await Cart.findOne({ user: userId })
             .populate('items.product');
 
         if (!cart || cart.items.length === 0) {
-            return res.status(400).json({ message: 'Sepetiniz bos, önce ürün ekleyin.' });
+            return res.status(400).json({ message: 'Sepetiniz boş, önce ürün ekleyin.' });
         }
 
-        const orderItems = cart.items.map(item => ({
+        // Null olabilecek ürünleri filtrele
+        const validItems = cart.items.filter(item => item.product && item.product._id);
+        if (validItems.length === 0) {
+            return res.status(400).json({ message: 'Sepetinizdeki ürünler bulunamadı. Lütfen sepeti temizleyip tekrar deneyin.' });
+        }
+
+        const orderItems = validItems.map(item => ({
             product: item.product._id,
             quantity: item.quantity,
-            selectedColor: item.selectedColor || 'Varsayilan',
-            priceAtPurchase: item.product.price
+            selectedColor: item.selectedColor || 'Varsayılan',
+            priceAtPurchase: item.product.price || 0
         }));
 
+        const totalAmount = orderItems.reduce((sum, item) => {
+            return sum + (item.priceAtPurchase * item.quantity);
+        }, 0);
+
+        const orderId = 'ORD-' + Date.now() + '-' + Math.floor(Math.random() * 1000);
+
         const newOrder = await Order.create({
-            user: req.user._id || req.user.id,
-            orderId: 'ORD-' + Date.now(),
+            user: userId,
+            orderId,
             items: orderItems,
-            totalAmount: cart.totalAmount,
-            shippingAddress,
-            paymentMethod: paymentMethod || 'CREDIT_CARD'
+            totalAmount: totalAmount || cart.totalAmount || 0,
+            shippingAddress: shippingAddress.trim(),
+            paymentMethod: paymentMethod || 'CREDIT_CARD',
+            status: 'PAYMENT_SUCCESS'
         });
 
         // Sepeti temizle
@@ -52,11 +67,11 @@ exports.createOrder = async (req, res) => {
         cart.totalAmount = 0;
         await cart.save();
 
-        // RabbitMQ'ya sipariş mesajı gönder (OPSIYONEL — hata olsa bile sipariş oluşur)
+        // RabbitMQ'ya sipariş mesajı gönder (OPSİYONEL — hata olsa bile sipariş oluşur)
         try {
             await publishToQueue('order_queue', {
                 orderId: newOrder.orderId,
-                userId: req.user._id || req.user.id,
+                userId: userId.toString(),
                 totalAmount: newOrder.totalAmount,
                 itemCount: orderItems.length,
                 createdAt: new Date().toISOString()
@@ -65,7 +80,7 @@ exports.createOrder = async (req, res) => {
             console.warn('⚠️ RabbitMQ mesaj gönderilemedi (sipariş yine de oluşturuldu):', mqError.message);
         }
 
-        // Redis cache'i temizle (OPSIYONEL — hata olsa bile sipariş oluşur)
+        // Redis cache'i temizle (OPSİYONEL — hata olsa bile sipariş oluşur)
         try {
             const redisClient = getRedisClient();
             if (redisClient) {
@@ -84,8 +99,8 @@ exports.createOrder = async (req, res) => {
         });
 
     } catch (error) {
-        console.error('Siparis olusturma hatasi:', error.message);
-        res.status(500).json({ message: 'Siparis olusturulamadi.', error: error.message });
+        console.error('Siparis olusturma hatasi:', error);
+        res.status(500).json({ message: 'Sipariş oluşturulamadı: ' + error.message, error: error.message });
     }
 };
 

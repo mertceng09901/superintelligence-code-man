@@ -17,13 +17,9 @@ const app = express();
 // CORS: Frontend'in backend ile konuşabilmesini sağlar
 // Docker ortamında frontend farklı bir port/container'dan gelir
 app.use(cors({
-    origin: [
-        'http://localhost:3000',       // Docker frontend
-        'http://mobil_frontend:3000',  // Docker network içi
-        'http://localhost:5173',       // Local Vite dev server
-    ],
+    origin: true, // Tüm originlere izin ver (mobil uygulama, web, Expo)
     credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
     allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
