@@ -8,10 +8,11 @@ const connectRedis = async () => {
     
     client = redis.createClient({ 
       url: redisUrl,
-      socket: { reconnectStrategy: false }
+      socket: { reconnectStrategy: false, connectTimeout: 5000 }
     });
 
     client.on('error', (err) => {
+      // Hata logla ama client'ı null yap ki sonraki çağrılar skip etsin
       console.error('❌ Redis Bağlantı Hatası:', err.message);
     });
 
@@ -26,12 +27,16 @@ const connectRedis = async () => {
     await client.connect();
     return client;
   } catch (err) {
-    console.error('❌ Redis başlatılamadı:', err.message);
-    // Redis opsiyonel — bağlanamazsa uygulama yine de çalışsın
+    console.error('❌ Redis başlatılamadı (opsiyonel):', err.message);
+    client = null; // Bağlanamazsa null olarak işaretle
     return null;
   }
 };
 
-const getRedisClient = () => client;
+// Sadece bağlı ve hazır olan client'ı döndür
+const getRedisClient = () => {
+  if (client && client.isReady) return client;
+  return null;
+};
 
 module.exports = { connectRedis, getRedisClient };

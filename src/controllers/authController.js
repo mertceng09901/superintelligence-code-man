@@ -34,7 +34,8 @@ exports.register = async (req, res) => {
                 lastName: user.lastName,
                 email: user.email,
                 role: user.role,
-                token: generateToken(user._id, user.role)
+                phone: user.phone || '',
+                token: generateToken(user._id)
             });
         }
     } catch (error) {
@@ -84,7 +85,8 @@ exports.login = async (req, res) => {
                 lastName: user.lastName,
                 email: user.email,
                 role: user.role,
-                token: generateToken(user._id, user.role)
+                phone: user.phone || '',
+                token: generateToken(user._id)
             });
         } else {
             res.status(401).json({ message: 'Geçersiz e-posta veya şifre.' });

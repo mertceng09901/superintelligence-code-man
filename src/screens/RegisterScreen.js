@@ -61,8 +61,9 @@ export default function RegisterScreen({ navigation }) {
     setLoading(true);
     try {
       await register({ firstName, lastName, email: sanitizedEmail, password, phone });
-      Alert.alert('🎉 Başarılı', 'Kayıt tamamlandı! Şimdi giriş yapabilirsiniz.');
-      navigation.navigate('Login');
+      // AuthContext register artık otomatik giriş yapıyor
+      // Navigation, user state değişimiyle otomatik ana sayfaya yönlendirir
+      Alert.alert('🎉 Başarılı', 'Hesabınız oluşturuldu ve giriş yapıldı!');
     } catch (error) {
       const msg = error.response?.data?.message || 'Kayıt yapılamadı.';
       Alert.alert('Hata', msg);

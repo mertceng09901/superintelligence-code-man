@@ -36,7 +36,6 @@ export const AuthProvider = ({ children }) => {
     const response = await api.post('/auth/login', { email, password });
     const data = response.data;
 
-    // Backend { _id, firstName, lastName, email, role, token } döndürüyor
     const newToken = data.token;
     const userData = {
       _id: data._id,
@@ -44,7 +43,7 @@ export const AuthProvider = ({ children }) => {
       lastName: data.lastName,
       email: data.email,
       role: data.role ? data.role.toUpperCase() : 'USER',
-      phone: data.phone,
+      phone: data.phone || '',
     };
 
     await AsyncStorage.setItem('userToken', newToken);
@@ -56,7 +55,25 @@ export const AuthProvider = ({ children }) => {
 
   const register = async (data) => {
     const response = await api.post('/auth/register', data);
-    return response.data;
+    const resData = response.data;
+
+    // Kayıt sonrası otomatik giriş yap ve telefon numarasını koru
+    if (resData.token) {
+      const newToken = resData.token;
+      const userData = {
+        _id: resData._id,
+        firstName: resData.firstName,
+        lastName: resData.lastName,
+        email: resData.email,
+        role: resData.role ? resData.role.toUpperCase() : 'USER',
+        phone: resData.phone || data.phone || '',
+      };
+      await AsyncStorage.setItem('userToken', newToken);
+      await AsyncStorage.setItem('userData', JSON.stringify(userData));
+      setToken(newToken);
+      setUser(userData);
+    }
+    return resData;
   };
 
   const logout = async () => {
