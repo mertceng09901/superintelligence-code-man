@@ -47,19 +47,48 @@ exports.addReview = async (req, res) => {
     }
 };
 
-// Yorum sil (kendi yorumu)
+// Yorum sil (kendi yorumu veya admin)
 exports.deleteReview = async (req, res) => {
     try {
         const { reviewId } = req.params;
         const userId = req.user._id || req.user.id;
         const review = await Review.findById(reviewId);
+        
         if (!review) return res.status(404).json({ message: 'Yorum bulunamadı' });
-        if (review.user.toString() !== userId.toString()) {
+        
+        // Sadece kendi yorumunu silebilir veya ADMIN yetkisi varsa silebilir
+        if (review.user.toString() !== userId.toString() && req.user.role !== 'ADMIN') {
             return res.status(403).json({ message: 'Bu yorumu silme yetkiniz yok.' });
         }
+        
         await Review.findByIdAndDelete(reviewId);
         res.json({ message: 'Yorum silindi.' });
     } catch (error) {
         res.status(500).json({ message: 'Yorum silinemedi', error: error.message });
+    }
+};
+
+// Yorum Güncelle (sadece kendi yorumu)
+exports.updateReview = async (req, res) => {
+    try {
+        const { reviewId } = req.params;
+        const { rating, comment } = req.body;
+        const userId = req.user._id || req.user.id;
+        
+        const review = await Review.findById(reviewId);
+        
+        if (!review) return res.status(404).json({ message: 'Yorum bulunamadı' });
+        
+        if (review.user.toString() !== userId.toString()) {
+            return res.status(403).json({ message: 'Bu yorumu düzenleme yetkiniz yok.' });
+        }
+        
+        if (rating) review.rating = Number(rating);
+        if (comment) review.comment = comment;
+        
+        await review.save();
+        res.json(review);
+    } catch (error) {
+        res.status(500).json({ message: 'Yorum güncellenemedi', error: error.message });
     }
 };
