@@ -2,21 +2,15 @@ const https = require('https');
 
 /**
  * POST /api/ai/seller-chat
- * Gemini 1.5 Flash ile satici simulasyonu.
- * API key yoksa akilli fallback cevaplar döndürür.
+ * Ucretsiz Pollinations AI (Llama/OpenAI ucretsiz arayuzu) ile satici simulasyonu.
+ * API key gerektirmez. Baglanti koparsa akilli fallback cevaplar dondurur.
  */
 exports.sellerChat = async (req, res) => {
     try {
         const { message, productName, productBrand, productPrice, productSpecs, productDescription } = req.body;
 
         if (!message || !message.trim()) {
-            return res.status(400).json({ message: 'Mesaj boş olamaz.' });
-        }
-
-        const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
-
-        if (!GEMINI_API_KEY || GEMINI_API_KEY.trim() === '') {
-            return res.json({ reply: getSmartFallback(message, productName, productBrand, productPrice) });
+            return res.status(400).json({ message: 'Mesaj bos olamaz.' });
         }
 
         // Urun bilgilerini zengin baglamda hazirla
@@ -33,34 +27,30 @@ exports.sellerChat = async (req, res) => {
             productDescription ? `Aciklama: ${productDescription}` : '',
         ].filter(Boolean).join('\n');
 
-        const systemPrompt = `Sen "Superintelligence" adli bir premium telefon magazasinin uzman ve samimi satis temsilcisin.
-Gorev: Musterinin asagidaki urun hakkindaki sorularini Turkce olarak yanitmak.
+        const systemPrompt = `Sen "Superintelligence" adli premium bir teknoloji magazasinin samimi, bilgili ve ikna edici satis temsilcisisin.
+Gorevin, asagidaki urun hakkinda sorulan sorulara yalnizca Turkce cevap vermektir.
 
 URUN BILGILERI:
 ${productContext || 'Genel bir telefon urunu'}
 
 KURALLAR:
-- Her zaman Turkce yaz
-- Samimi, sicak ve uzman bir satici gibi davran
-- Kisa ve net cevaplar ver (maksimum 3-4 cumle)
-- Bilmedigini uydurmaya calisma
-- Fiyat muzakeresi yapma
-- Garanti: 2 yil, Kargo: 1-3 is gunu, Iade: 14 gun
-
-Musteri sorusu: ${message}`;
+- Her zaman ve sadece TURKCE dilinde yaz.
+- Samimi, yardimsever ve profesyonel bir satici gibi davran.
+- Kisa ve net cevaplar ver (maksimum 3-4 cumle).
+- Bilmedigin veya emin olmadigin ozellikleri uydurma.
+- Fiyat karsi tarafa ne verilmisse odur, indirim yapma.
+- Musteri politikamiz: Garanti 2 yil, Kargo 1-3 is gunu, Iade 14 gun.`;
 
         const requestBody = JSON.stringify({
-            contents: [{ parts: [{ text: systemPrompt }] }],
-            generationConfig: {
-                temperature: 0.7,
-                maxOutputTokens: 300,
-                topP: 0.8,
-            }
+            messages: [
+                { role: 'system', content: systemPrompt },
+                { role: 'user', content: message }
+            ]
         });
 
         const options = {
-            hostname: 'generativelanguage.googleapis.com',
-            path: `/v1/models/gemini-1.0-pro:generateContent?key=${GEMINI_API_KEY}`,
+            hostname: 'text.pollinations.ai',
+            path: '/',
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -73,25 +63,26 @@ Musteri sorusu: ${message}`;
                 let data = '';
                 httpres.on('data', chunk => data += chunk);
                 httpres.on('end', () => {
-                    try {
-                        const parsed = JSON.parse(data);
-                        if (parsed.error) {
-                            console.error('Gemini API hatasi:', parsed.error.message);
-                            resolve(getSmartFallback(message, productName, productBrand, productPrice));
-                            return;
-                        }
-                        const text = parsed?.candidates?.[0]?.content?.parts?.[0]?.text;
-                        resolve(text ? text.trim() : getSmartFallback(message, productName, productBrand, productPrice));
-                    } catch (e) {
-                        console.error('Gemini parse hatasi:', e.message);
+                    if (httpres.statusCode === 200 && data && data.trim().length > 0) {
+                        resolve(data.trim());
+                    } else {
+                        console.error('AI API yanit hatasi, statu:', httpres.statusCode);
                         resolve(getSmartFallback(message, productName, productBrand, productPrice));
                     }
                 });
             });
+            
+            httpreq.setTimeout(10000, () => {
+                console.error('AI API zaman asimi');
+                resolve(getSmartFallback(message, productName, productBrand, productPrice));
+                httpreq.abort();
+            });
+
             httpreq.on('error', (err) => {
-                console.error('Gemini baglanma hatasi:', err.message);
+                console.error('AI baglanma hatasi:', err.message);
                 resolve(getSmartFallback(message, productName, productBrand, productPrice));
             });
+
             httpreq.write(requestBody);
             httpreq.end();
         });
@@ -149,7 +140,7 @@ function getSmartFallback(message, productName, productBrand, productPrice) {
         return 'Rica ederim! Baska sorunuz varsa her zaman buradayim. Alisverislerinizde basarilar!';
     }
     if (msg.includes('detay') || msg.includes('anlat') || msg.includes('bilgi ver') || msg.includes('hakkinda')) {
-        return `${urun} ${marka} markasinin amiral gemisi modellerinden biridir. ${productPrice ? fiyat + ' fiyatiyla' : ''} sunulan bu model, guclue performansi, kaliteli kamerasi ve uzun batarya omruyle one cikiyor. Baska merak ettiginiz bir konu var mi?`;
+        return `${urun} ${marka} markasinin amiral gemisi modellerinden biridir. ${productPrice ? fiyat + ' fiyatiyla' : ''} sunulan bu model, guclu performansi, kaliteli kamerasi ve uzun batarya omruyle one cikiyor. Baska merak ettiginiz bir konu var mi?`;
     }
 
     return `${urun} hakkindaki sorunuz icin tesekkurler! Kamera, batarya, ekran, fiyat, kargo veya garanti gibi konularda daha fazla bilgi almak icin sormaya devam edin. Size en iyi sekilde yardimci olmak istiyoruz!`;
