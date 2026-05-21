@@ -8,6 +8,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import api from '../config/api.native';
 import { COLORS, SHADOWS, SIZES } from '../config/theme';
+import { useAuth } from '../context/AuthContext';
 
 const { width } = Dimensions.get('window');
 
@@ -81,6 +82,7 @@ export default function ProductDetailScreen({ route, navigation }) {
   const [loading, setLoading] = useState(true);
   const [addingToCart, setAddingToCart] = useState(false);
   const [quantity, setQuantity] = useState(1);
+  const { user } = useAuth();
 
   // Yorumlar
   const [reviews, setReviews] = useState([]);
@@ -90,6 +92,7 @@ export default function ProductDetailScreen({ route, navigation }) {
   const [myComment, setMyComment] = useState('');
   const [submittingReview, setSubmittingReview] = useState(false);
   const [showReviewForm, setShowReviewForm] = useState(false);
+  const [editingReviewId, setEditingReviewId] = useState(null);
 
   // AI Sohbet
   const [chatMessages, setChatMessages] = useState([
@@ -138,15 +141,43 @@ export default function ProductDetailScreen({ route, navigation }) {
     if (!myComment.trim()) return Alert.alert('Uyarı', 'Lütfen bir yorum yazın.');
     setSubmittingReview(true);
     try {
-      await api.post(`/reviews/${productId}`, { rating: myRating, comment: myComment });
+      if (editingReviewId) {
+        await api.put(`/reviews/${editingReviewId}`, { rating: myRating, comment: myComment });
+        Alert.alert('✅', 'Yorumunuz güncellendi!');
+      } else {
+        await api.post(`/reviews/${productId}`, { rating: myRating, comment: myComment });
+        Alert.alert('✅', 'Yorumunuz eklendi!');
+      }
       setMyRating(0);
       setMyComment('');
+      setEditingReviewId(null);
       setShowReviewForm(false);
       await fetchReviews();
-      Alert.alert('✅', 'Yorumunuz eklendi!');
     } catch (e) {
-      Alert.alert('Hata', e.response?.data?.message || 'Yorum eklenemedi.');
+      Alert.alert('Hata', e.response?.data?.message || 'İşlem başarısız.');
     } finally { setSubmittingReview(false); }
+  };
+
+  const handleEditReview = (r) => {
+    setMyRating(r.rating);
+    setMyComment(r.comment);
+    setEditingReviewId(r._id);
+    setShowReviewForm(true);
+  };
+
+  const handleDeleteReview = (reviewId) => {
+    Alert.alert('Emin misiniz?', 'Yorumunuzu silmek istediğinize emin misiniz?', [
+      { text: 'İptal', style: 'cancel' },
+      { text: 'Sil', style: 'destructive', onPress: async () => {
+          try {
+            await api.delete(`/reviews/${reviewId}`);
+            Alert.alert('✅', 'Yorum silindi.');
+            await fetchReviews();
+          } catch (e) {
+            Alert.alert('Hata', 'Silinirken hata oluştu.');
+          }
+      }}
+    ]);
   };
 
   const handleSendChat = async () => {
@@ -351,21 +382,40 @@ export default function ProductDetailScreen({ route, navigation }) {
           {reviews.length > 0 && (
             <View style={styles.reviewsSection}>
               <Text style={styles.reviewsTitle}>Kullanıcı Yorumları ({totalReviews})</Text>
-              {reviews.map((r, i) => (
-                <View key={i} style={styles.reviewCard}>
-                  <View style={styles.reviewHeader}>
-                    <View style={styles.reviewAvatar}>
-                      <Text style={styles.reviewAvatarText}>{r.userName?.charAt(0)?.toUpperCase()}</Text>
+              {reviews.map((r, i) => {
+                const isMyReview = user?._id === r.user;
+                const isAdmin = user?.role === 'ADMIN';
+                return (
+                  <View key={i} style={styles.reviewCard}>
+                    <View style={styles.reviewHeader}>
+                      <View style={styles.reviewAvatar}>
+                        <Text style={styles.reviewAvatarText}>{r.userName?.charAt(0)?.toUpperCase()}</Text>
+                      </View>
+                      <View style={{ flex: 1 }}>
+                        <Text style={styles.reviewName}>{r.userName}</Text>
+                        <StarRow rating={r.rating} size={13} />
+                      </View>
+                      <Text style={styles.reviewDate}>{new Date(r.createdAt).toLocaleDateString('tr-TR')}</Text>
                     </View>
-                    <View style={{ flex: 1 }}>
-                      <Text style={styles.reviewName}>{r.userName}</Text>
-                      <StarRow rating={r.rating} size={13} />
-                    </View>
-                    <Text style={styles.reviewDate}>{new Date(r.createdAt).toLocaleDateString('tr-TR')}</Text>
+                    <Text style={styles.reviewComment}>{r.comment}</Text>
+                    
+                    {(isMyReview || isAdmin) && (
+                      <View style={styles.reviewActions}>
+                        {isMyReview && (
+                          <TouchableOpacity style={styles.reviewActionBtn} onPress={() => handleEditReview(r)}>
+                            <Ionicons name="pencil-outline" size={16} color={COLORS.primary} />
+                            <Text style={[styles.reviewActionText, { color: COLORS.primary }]}>Düzenle</Text>
+                          </TouchableOpacity>
+                        )}
+                        <TouchableOpacity style={styles.reviewActionBtn} onPress={() => handleDeleteReview(r._id)}>
+                          <Ionicons name="trash-outline" size={16} color={COLORS.error} />
+                          <Text style={[styles.reviewActionText, { color: COLORS.error }]}>Sil</Text>
+                        </TouchableOpacity>
+                      </View>
+                    )}
                   </View>
-                  <Text style={styles.reviewComment}>{r.comment}</Text>
-                </View>
-              ))}
+                );
+              })}
             </View>
           )}
         </View>
@@ -459,6 +509,9 @@ const styles = StyleSheet.create({
   reviewName: { fontSize: 14, fontWeight: '700', color: COLORS.text, marginBottom: 2 },
   reviewDate: { fontSize: 11, color: COLORS.textMuted },
   reviewComment: { fontSize: 14, color: COLORS.textSecondary, lineHeight: 20 },
+  reviewActions: { flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center', gap: 16, marginTop: 10, paddingTop: 10, borderTopWidth: 1, borderTopColor: '#F3F4F6' },
+  reviewActionBtn: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  reviewActionText: { fontSize: 13, fontWeight: '600' },
   // Bottom Bar
   bottomBar: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20, paddingVertical: 16, backgroundColor: '#FFF', borderTopLeftRadius: 24, borderTopRightRadius: 24, gap: 16 },
   totalSection: {},
