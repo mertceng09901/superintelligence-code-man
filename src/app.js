@@ -37,7 +37,7 @@ app.use('/api/ai', aiRoutes);           // Yapay zeka satıcı sohbeti
 app.get('/api/health', (req, res) => {
     res.json({
         status: 'OK',
-        version: '2.0.0',
+        version: '2.1.0',
         timestamp: new Date().toISOString(),
         demoAccounts: [
             { email: 'admin@superintelligence.com', password: 'admin123', role: 'ADMIN' },
