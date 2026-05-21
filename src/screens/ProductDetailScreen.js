@@ -192,6 +192,7 @@ export default function ProductDetailScreen({ route, navigation }) {
         productName: product?.model,
         productBrand: product?.brand,
         productPrice: product?.price,
+        productDescription: product?.description,
         productSpecs: product?.specs,
       });
       setChatMessages(prev => [...prev, { from: 'seller', text: res.data.reply }]);
