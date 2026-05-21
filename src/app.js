@@ -9,6 +9,8 @@ const cartRoutes = require('./routes/cartRoutes');
 const orderRoutes = require('./routes/orderRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
 const sellerRoutes = require('./routes/sellerRoutes');
+const reviewRoutes = require('./routes/reviewRoutes');
+const aiRoutes = require('./routes/aiRoutes');
 
 const app = express();
 
@@ -28,6 +30,8 @@ app.use('/api/cart', cartRoutes);      // Sepet işlemleri
 app.use('/api/orders', orderRoutes);    // Sipariş işlemleri
 app.use('/api/payments', paymentRoutes); // Ödeme işlemleri
 app.use('/api/seller', sellerRoutes);   // Satıcı paneli (Ekle, Sil, Güncelle)
+app.use('/api/reviews', reviewRoutes);  // Ürün yorumları ve puanlama
+app.use('/api/ai', aiRoutes);           // Yapay zeka satıcı sohbeti
 
 // --- Saglik Kontrolu ---
 app.get('/api/health', (req, res) => {
