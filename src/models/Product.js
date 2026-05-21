@@ -24,7 +24,7 @@ const productSchema = new mongoose.Schema({
         storage: { type: String, required: true }
     },
     imageUrl: { type: String, required: false },
-    // İleride resim URL'lerini tutmak için bir dizi (array)
+    // Birden fazla resim için URL dizisi (kaydırmalı galeri)
     images: [
         { type: String }
     ]
