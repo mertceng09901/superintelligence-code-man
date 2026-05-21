@@ -39,18 +39,6 @@ export default function AddEditProductScreen({ route, navigation }) {
     } finally { setSaving(false); }
   };
 
-  const Field = ({ icon, label, value, onChangeText, keyboardType, multiline }) => (
-    <View style={styles.fieldGroup}>
-      <Text style={styles.fieldLabel}>{label}</Text>
-      <View style={styles.inputWrapper}>
-        <Ionicons name={icon} size={18} color={COLORS.textMuted} style={{ marginLeft: 12 }} />
-        <TextInput style={[styles.input, multiline && { minHeight: 60, textAlignVertical: 'top' }]}
-          value={value} onChangeText={onChangeText} keyboardType={keyboardType || 'default'}
-          placeholderTextColor={COLORS.textMuted} placeholder={label} multiline={multiline} />
-      </View>
-    </View>
-  );
-
   return (
     <View style={styles.container}>
       <StatusBar barStyle="light-content" />
@@ -61,27 +49,78 @@ export default function AddEditProductScreen({ route, navigation }) {
       </LinearGradient>
 
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
-        <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
+        <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
           <View style={[styles.card, SHADOWS.small]}>
-            <Field icon="pricetag-outline" label="Marka" value={brand} onChangeText={setBrand} />
-            <Field icon="phone-portrait-outline" label="Model" value={model} onChangeText={setModel} />
-            <View style={styles.row}>
-              <View style={{ flex: 1, marginRight: 8 }}>
-                <Field icon="cash-outline" label="Fiyat (₺)" value={price} onChangeText={setPrice} keyboardType="numeric" />
-              </View>
-              <View style={{ flex: 1 }}>
-                <Field icon="layers-outline" label="Stok" value={stock} onChangeText={setStock} keyboardType="numeric" />
-              </View>
-            </View>
-            <View style={styles.row}>
-              <View style={{ flex: 1, marginRight: 8 }}>
-                <Field icon="hardware-chip-outline" label="RAM" value={ram} onChangeText={setRam} />
-              </View>
-              <View style={{ flex: 1 }}>
-                <Field icon="server-outline" label="Depolama" value={storage} onChangeText={setStorage} />
+            
+            {/* Marka */}
+            <View style={styles.fieldGroup}>
+              <Text style={styles.fieldLabel}>Marka</Text>
+              <View style={styles.inputWrapper}>
+                <Ionicons name="pricetag-outline" size={18} color={COLORS.textMuted} style={{ marginLeft: 12 }} />
+                <TextInput style={styles.input} value={brand} onChangeText={setBrand} placeholderTextColor={COLORS.textMuted} placeholder="Marka" />
               </View>
             </View>
-            <Field icon="image-outline" label="Görsel URL" value={imageUrl} onChangeText={setImageUrl} />
+
+            {/* Model */}
+            <View style={styles.fieldGroup}>
+              <Text style={styles.fieldLabel}>Model</Text>
+              <View style={styles.inputWrapper}>
+                <Ionicons name="phone-portrait-outline" size={18} color={COLORS.textMuted} style={{ marginLeft: 12 }} />
+                <TextInput style={styles.input} value={model} onChangeText={setModel} placeholderTextColor={COLORS.textMuted} placeholder="Model" />
+              </View>
+            </View>
+
+            <View style={styles.row}>
+              <View style={{ flex: 1, marginRight: 8 }}>
+                <View style={styles.fieldGroup}>
+                  <Text style={styles.fieldLabel}>Fiyat (₺)</Text>
+                  <View style={styles.inputWrapper}>
+                    <Ionicons name="cash-outline" size={18} color={COLORS.textMuted} style={{ marginLeft: 12 }} />
+                    <TextInput style={styles.input} value={price} onChangeText={setPrice} keyboardType="numeric" placeholderTextColor={COLORS.textMuted} placeholder="Fiyat (₺)" />
+                  </View>
+                </View>
+              </View>
+              <View style={{ flex: 1 }}>
+                <View style={styles.fieldGroup}>
+                  <Text style={styles.fieldLabel}>Stok</Text>
+                  <View style={styles.inputWrapper}>
+                    <Ionicons name="layers-outline" size={18} color={COLORS.textMuted} style={{ marginLeft: 12 }} />
+                    <TextInput style={styles.input} value={stock} onChangeText={setStock} keyboardType="numeric" placeholderTextColor={COLORS.textMuted} placeholder="Stok" />
+                  </View>
+                </View>
+              </View>
+            </View>
+
+            <View style={styles.row}>
+              <View style={{ flex: 1, marginRight: 8 }}>
+                <View style={styles.fieldGroup}>
+                  <Text style={styles.fieldLabel}>RAM</Text>
+                  <View style={styles.inputWrapper}>
+                    <Ionicons name="hardware-chip-outline" size={18} color={COLORS.textMuted} style={{ marginLeft: 12 }} />
+                    <TextInput style={styles.input} value={ram} onChangeText={setRam} placeholderTextColor={COLORS.textMuted} placeholder="RAM" />
+                  </View>
+                </View>
+              </View>
+              <View style={{ flex: 1 }}>
+                <View style={styles.fieldGroup}>
+                  <Text style={styles.fieldLabel}>Depolama</Text>
+                  <View style={styles.inputWrapper}>
+                    <Ionicons name="server-outline" size={18} color={COLORS.textMuted} style={{ marginLeft: 12 }} />
+                    <TextInput style={styles.input} value={storage} onChangeText={setStorage} placeholderTextColor={COLORS.textMuted} placeholder="Depolama" />
+                  </View>
+                </View>
+              </View>
+            </View>
+
+            {/* Görsel URL */}
+            <View style={styles.fieldGroup}>
+              <Text style={styles.fieldLabel}>Görsel URL</Text>
+              <View style={styles.inputWrapper}>
+                <Ionicons name="image-outline" size={18} color={COLORS.textMuted} style={{ marginLeft: 12 }} />
+                <TextInput style={styles.input} value={imageUrl} onChangeText={setImageUrl} placeholderTextColor={COLORS.textMuted} placeholder="Görsel URL" />
+              </View>
+            </View>
+
           </View>
 
           <TouchableOpacity onPress={handleSave} disabled={saving} activeOpacity={0.8}>

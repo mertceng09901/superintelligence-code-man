@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import {
   View, Text, Image, ScrollView, StyleSheet,
-  TouchableOpacity, Alert, ActivityIndicator, StatusBar, Dimensions
+  TouchableOpacity, Alert, ActivityIndicator, StatusBar,
+  Dimensions, FlatList
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
@@ -10,6 +11,72 @@ import { COLORS, SHADOWS, SIZES } from '../config/theme';
 
 const { width } = Dimensions.get('window');
 
+// ─── Resim Carousel Bileşeni ───────────────────────────────────────────────
+function ImageCarousel({ images }) {
+  const [activeIndex, setActiveIndex] = useState(0);
+  const flatListRef = useRef(null);
+
+  if (!images || images.length === 0) return null;
+
+  const onScroll = (e) => {
+    const idx = Math.round(e.nativeEvent.contentOffset.x / width);
+    setActiveIndex(idx);
+  };
+
+  return (
+    <View>
+      <FlatList
+        ref={flatListRef}
+        data={images}
+        horizontal
+        pagingEnabled
+        showsHorizontalScrollIndicator={false}
+        keyExtractor={(_, i) => String(i)}
+        onScroll={onScroll}
+        scrollEventThrottle={16}
+        renderItem={({ item }) => (
+          <View style={carousel.slide}>
+            <Image source={{ uri: item }} style={carousel.image} resizeMode="contain" />
+          </View>
+        )}
+      />
+      {/* Dots */}
+      <View style={carousel.dots}>
+        {images.map((_, i) => (
+          <TouchableOpacity
+            key={i}
+            onPress={() => {
+              flatListRef.current?.scrollToIndex({ index: i, animated: true });
+              setActiveIndex(i);
+            }}
+          >
+            <View style={[carousel.dot, i === activeIndex && carousel.dotActive]} />
+          </TouchableOpacity>
+        ))}
+      </View>
+      {/* Counter */}
+      <View style={carousel.counter}>
+        <Text style={carousel.counterText}>{activeIndex + 1} / {images.length}</Text>
+      </View>
+    </View>
+  );
+}
+
+const carousel = StyleSheet.create({
+  slide: { width, backgroundColor: '#FFF', paddingVertical: 40, paddingTop: 90, alignItems: 'center' },
+  image: { width: width * 0.7, height: 260 },
+  dots: { flexDirection: 'row', justifyContent: 'center', paddingBottom: 16, gap: 6 },
+  dot: { width: 7, height: 7, borderRadius: 4, backgroundColor: '#D1D5DB' },
+  dotActive: { width: 20, backgroundColor: COLORS.primary },
+  counter: {
+    position: 'absolute', top: 56, right: 16,
+    backgroundColor: 'rgba(0,0,0,0.4)', borderRadius: 12,
+    paddingHorizontal: 10, paddingVertical: 3,
+  },
+  counterText: { color: '#FFF', fontSize: 12, fontWeight: '600' },
+});
+
+// ─── Ana Ekran ─────────────────────────────────────────────────────────────
 export default function ProductDetailScreen({ route, navigation }) {
   const { productId } = route.params;
   const [product, setProduct] = useState(null);
@@ -17,9 +84,7 @@ export default function ProductDetailScreen({ route, navigation }) {
   const [addingToCart, setAddingToCart] = useState(false);
   const [quantity, setQuantity] = useState(1);
 
-  useEffect(() => {
-    fetchProduct();
-  }, []);
+  useEffect(() => { fetchProduct(); }, []);
 
   const fetchProduct = async () => {
     try {
@@ -35,29 +100,19 @@ export default function ProductDetailScreen({ route, navigation }) {
   const handleAddToCart = async () => {
     setAddingToCart(true);
     try {
-      await api.post('/cart/add', {
-        productId: product._id,
-        quantity,
-        selectedColor: 'Standart'
-      });
+      await api.post('/cart/add', { productId: product._id, quantity, selectedColor: 'Standart' });
       Alert.alert('✅ Başarılı', `${product.model} sepete eklendi!`, [
         { text: 'Alışverişe Devam', style: 'cancel' },
-        {
-          text: 'Sepete Git',
-          onPress: () => {
-            navigation.navigate('UserHome', { screen: 'Sepet' });
-          }
-        },
+        { text: 'Sepete Git', onPress: () => navigation.navigate('UserHome', { screen: 'Sepet' }) },
       ]);
     } catch (error) {
-      const msg = error.response?.data?.message || 'Sepete eklenemedi.';
-      Alert.alert('Hata', msg);
+      Alert.alert('Hata', error.response?.data?.message || 'Sepete eklenemedi.');
     } finally {
       setAddingToCart(false);
     }
   };
 
-  const formatPrice = (price) => new Intl.NumberFormat('tr-TR').format(price);
+  const formatPrice = (p) => new Intl.NumberFormat('tr-TR').format(p);
 
   if (loading) {
     return (
@@ -76,26 +131,32 @@ export default function ProductDetailScreen({ route, navigation }) {
     );
   }
 
+  // Çoklu resim varsa kullan, yoksa tekil imageUrl'yi dizi yap
+  const images =
+    product.images && product.images.length > 0
+      ? product.images
+      : product.imageUrl
+      ? [product.imageUrl]
+      : [];
+
   return (
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" />
       <ScrollView showsVerticalScrollIndicator={false}>
-        {/* Back Button */}
+
+        {/* Geri Butonu */}
         <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
           <View style={styles.backBtnCircle}>
             <Ionicons name="arrow-back" size={22} color={COLORS.text} />
           </View>
         </TouchableOpacity>
 
-        {/* Product Image */}
+        {/* Resim Carousel */}
         <View style={styles.imageSection}>
-          <Image
-            source={{ uri: product.imageUrl || 'https://via.placeholder.com/400' }}
-            style={styles.productImage}
-          />
+          <ImageCarousel images={images} />
         </View>
 
-        {/* Product Info */}
+        {/* Ürün Bilgileri */}
         <View style={styles.infoSection}>
           <View style={styles.brandRow}>
             <LinearGradient colors={COLORS.gradient} style={styles.brandBadge}>
@@ -110,10 +171,9 @@ export default function ProductDetailScreen({ route, navigation }) {
           </View>
 
           <Text style={styles.modelTitle}>{product.model}</Text>
-
           <Text style={styles.priceText}>{formatPrice(product.price)} ₺</Text>
 
-          {/* Specs */}
+          {/* Teknik Özellikler */}
           {product.specs && (
             <View style={styles.specsCard}>
               <Text style={styles.specsTitle}>Teknik Özellikler</Text>
@@ -140,7 +200,7 @@ export default function ProductDetailScreen({ route, navigation }) {
             </View>
           )}
 
-          {/* Quantity Selector */}
+          {/* Adet Seçici */}
           <View style={styles.quantitySection}>
             <Text style={styles.quantityLabel}>Adet</Text>
             <View style={styles.quantitySelector}>
@@ -156,7 +216,7 @@ export default function ProductDetailScreen({ route, navigation }) {
         </View>
       </ScrollView>
 
-      {/* Bottom Action */}
+      {/* Alt Çubuk */}
       <View style={[styles.bottomBar, SHADOWS.large]}>
         <View style={styles.totalSection}>
           <Text style={styles.totalLabel}>Toplam</Text>
@@ -197,11 +257,7 @@ const styles = StyleSheet.create({
     width: 40, height: 40, borderRadius: 14, backgroundColor: '#FFF',
     justifyContent: 'center', alignItems: 'center', ...SHADOWS.small,
   },
-  imageSection: {
-    backgroundColor: '#FFF', paddingVertical: 40, paddingTop: 80, alignItems: 'center',
-    borderBottomLeftRadius: 32, borderBottomRightRadius: 32, ...SHADOWS.small,
-  },
-  productImage: { width: width * 0.65, height: 260, resizeMode: 'contain' },
+  imageSection: { backgroundColor: '#FFF', borderBottomLeftRadius: 32, borderBottomRightRadius: 32, ...SHADOWS.small, overflow: 'hidden' },
   infoSection: { padding: 20 },
   brandRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 },
   brandBadge: { paddingHorizontal: 14, paddingVertical: 5, borderRadius: 20 },
@@ -211,17 +267,11 @@ const styles = StyleSheet.create({
   stockText: { fontSize: 12, fontWeight: '600' },
   modelTitle: { fontSize: 26, fontWeight: '800', color: COLORS.text, marginBottom: 8 },
   priceText: { fontSize: 30, fontWeight: '800', color: COLORS.secondary, marginBottom: 20 },
-  specsCard: {
-    backgroundColor: '#FFF', borderRadius: SIZES.radius, padding: 18,
-    marginBottom: 16, ...SHADOWS.small,
-  },
+  specsCard: { backgroundColor: '#FFF', borderRadius: SIZES.radius, padding: 18, marginBottom: 16, ...SHADOWS.small },
   specsTitle: { fontSize: 16, fontWeight: '700', color: COLORS.text, marginBottom: 14 },
   specsGrid: { flexDirection: 'row', gap: 16 },
   specItem: { flexDirection: 'row', alignItems: 'center', gap: 10, flex: 1 },
-  specIconBg: {
-    width: 42, height: 42, borderRadius: 12, backgroundColor: COLORS.background,
-    justifyContent: 'center', alignItems: 'center',
-  },
+  specIconBg: { width: 42, height: 42, borderRadius: 12, backgroundColor: COLORS.background, justifyContent: 'center', alignItems: 'center' },
   specLabel: { fontSize: 12, color: COLORS.textMuted },
   specValue: { fontSize: 15, fontWeight: '700', color: COLORS.text },
   quantitySection: {
@@ -230,10 +280,7 @@ const styles = StyleSheet.create({
   },
   quantityLabel: { fontSize: 16, fontWeight: '600', color: COLORS.text },
   quantitySelector: { flexDirection: 'row', alignItems: 'center', gap: 16 },
-  qtyBtn: {
-    width: 36, height: 36, borderRadius: 10, backgroundColor: COLORS.background,
-    justifyContent: 'center', alignItems: 'center',
-  },
+  qtyBtn: { width: 36, height: 36, borderRadius: 10, backgroundColor: COLORS.background, justifyContent: 'center', alignItems: 'center' },
   qtyText: { fontSize: 18, fontWeight: '700', color: COLORS.text, minWidth: 24, textAlign: 'center' },
   bottomBar: {
     flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20,
@@ -243,9 +290,6 @@ const styles = StyleSheet.create({
   totalSection: {},
   totalLabel: { fontSize: 12, color: COLORS.textMuted },
   totalPrice: { fontSize: 20, fontWeight: '800', color: COLORS.text },
-  addToCartBtn: {
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'center',
-    borderRadius: SIZES.radiusSm, paddingVertical: 15, gap: 8,
-  },
+  addToCartBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', borderRadius: SIZES.radiusSm, paddingVertical: 15, gap: 8 },
   addToCartText: { color: '#FFF', fontSize: 16, fontWeight: '700' },
 });

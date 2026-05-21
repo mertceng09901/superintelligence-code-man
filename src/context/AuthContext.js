@@ -35,18 +35,31 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     const response = await api.post('/auth/login', { email, password });
     const data = response.data;
-
     const newToken = data.token;
+
+    // Tokeni gecici olarak kaydet (Profile istegi atabilmek icin)
+    await AsyncStorage.setItem('userToken', newToken);
+    
+    // Eski backend login response'da telefon gondermiyor, profile atarak telefonu al:
+    let phoneToUse = data.phone || '';
+    try {
+      const profileRes = await api.get('/auth/profile');
+      if (profileRes.data && profileRes.data.phone) {
+        phoneToUse = profileRes.data.phone;
+      }
+    } catch (e) {
+      console.warn('Profil bilgisi alinamadi:', e.message);
+    }
+
     const userData = {
       _id: data._id,
       firstName: data.firstName,
       lastName: data.lastName,
       email: data.email,
       role: data.role ? data.role.toUpperCase() : 'USER',
-      phone: data.phone || '',
+      phone: phoneToUse,
     };
 
-    await AsyncStorage.setItem('userToken', newToken);
     await AsyncStorage.setItem('userData', JSON.stringify(userData));
     setToken(newToken);
     setUser(userData);
