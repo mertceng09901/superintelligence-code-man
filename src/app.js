@@ -46,6 +46,17 @@ app.get('/api/health', (req, res) => {
     });
 });
 
+// AI key debug (gecici - test sonrasi silinecek)
+app.get('/api/ai/debug-key', (req, res) => {
+    const key = process.env.GEMINI_API_KEY;
+    res.json({
+        hasKey: !!key,
+        keyLength: key ? key.length : 0,
+        keyPreview: key ? key.substring(0, 8) + '...' : 'YOK',
+        keyTrimmed: key ? key.trim().length : 0
+    });
+});
+
 // Demo hesaplari sifirlama endpoint'i (browserdan cagir)
 app.get('/api/admin/reset-demo', async (req, res) => {
     try {
